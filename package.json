@@ -4,8 +4,13 @@
     "dotenv": "^17.2.1",
     "express": "^5.1.0"
   },
-  "scripts": {
-    "dev": "node listen.js"
+ "scripts": {
+    "dev": "node listen.js",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "jest": "^30.0.5",
+    "supertest": "^7.1.4"
+  }
 }

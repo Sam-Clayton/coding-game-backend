@@ -88,3 +88,16 @@ export async function createNotes() {
     `
   );
 }
+
+export async function createKataTags() {
+  return await db.query(
+    `
+    CREATE TABLE kata_tags
+    (
+      kata_id INT REFERENCES katas(kata_id) ON DELETE CASCADE,
+      tag_id INT REFERENCES tags(tag_id) ON DELETE CASCADE,
+      PRIMARY KEY (kata_id, tag_id)
+    )
+    `
+  );
+}

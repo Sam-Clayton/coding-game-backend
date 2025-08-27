@@ -8,7 +8,8 @@
   },
   "scripts": {
     "dev": "node listen.js",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "setup-dbs": "psql -f ./db/setup-dbs.sql"
   },
   "type": "module",
   "devDependencies": {

@@ -7,26 +7,22 @@ import {
   createHints,
   createTags,
   createNotes,
+  createKataTags,
 } from "./manage-tables.js";
 
-export async function seed(
-  kataData,
-  kataTestingData,
-  hintData,
-  tagData,
-  noteData
-) {
+export async function seed(kataData, testData, hintData, tagData, noteData) {
   try {
-    await dropTables("tests", "hints", "katas", "tags", "notes");
+    await dropTables("kata_tags", "tests", "hints", "notes", "tags", "katas");
 
     await createKatas();
     await createTests();
     await createHints();
     await createTags();
     await createNotes();
+    await createKataTags();
 
     await insertData("katas", kataData);
-    await insertData("tests", kataTestingData);
+    await insertData("tests", testData);
     await insertData("hints", hintData);
     await insertData("tags", tagData);
     await insertData("notes", noteData);

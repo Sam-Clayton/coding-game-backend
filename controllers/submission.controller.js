@@ -1,4 +1,4 @@
-import { sendSubmission } from "../models/submission.models";
+import { sendSubmission } from "../models/submission.model.js";
 
 const code = `
 function add(a, b) {

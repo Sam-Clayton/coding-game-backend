@@ -8,4 +8,8 @@ function fetchKataById() {
   }
 }
 
-export default fetchKataById;
+
+export default fetchKataById
+
+
+

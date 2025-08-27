@@ -1,4 +1,4 @@
-import fetchKataById from "../model/katas.model";
+import fetchKataById from "../models/katas.model.js";
 
 export const getKataById = (req, res) => {
   fetchKataById()

@@ -27,5 +27,5 @@ export async function sendSubmission(sourceCode) {
   };
 
   const result = await axios.post(url, data, { params, headers });
-  return decode(result.data);
+  return decode(result.data.stdout);
 }

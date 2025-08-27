@@ -1,0 +1,2 @@
+DROP DATABASE IF EXISTS coding_game;
+CREATE DATABASE coding_game;

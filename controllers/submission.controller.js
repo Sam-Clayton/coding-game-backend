@@ -15,6 +15,7 @@ export async function postSubmission(req, res) {
   ${code}
   console.log(${test});
   `;
-  const { stdout } = await sendSubmission(sourceCode);
-  res.status(201).send(stdout);
+  const result = await sendSubmission(sourceCode);
+  const resultJson = JSON.stringify({ output: result });
+  res.status(201).send(resultJson);
 }

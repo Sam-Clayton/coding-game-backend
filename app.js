@@ -5,7 +5,9 @@ import express from "express";
 
 const app = express();
 
-app.get('/katas/:id', getKataById); 
+// app.get('/api/katas', getAllKatas)
+
+app.get('/api/katas/:id', getKataById); 
 
 
 app.post('/api/submit', postSubmission)

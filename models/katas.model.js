@@ -1,6 +1,10 @@
 import kata from "../data/katas.js";
 
-function fetchKataById() {
+// function fetchAllKatas() {
+
+// }
+
+export const fetchKataById = () => {
   if (kata.id) {
     return Promise.resolve(kata);
   } else {
@@ -8,8 +12,6 @@ function fetchKataById() {
   }
 }
 
-
-export default fetchKataById
 
 
 

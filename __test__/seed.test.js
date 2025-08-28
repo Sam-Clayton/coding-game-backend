@@ -1,12 +1,21 @@
+import db from "../db/connection.js";
+import { seed } from "../db/seeds/seed.js";
+import data from "../db/data/test-data/test-data/index.js";
+
+console.log(data);
+
+beforeAll(() => seed(data));
+afterAll(() => db.end());
+
 describe("seed", () => {
   describe("katas table", () => {
     test("katas table exists", () => {
       return db
         .query(
           `SELECT EXISTS (
-            SELECT FROM 
-                information_schema.tables 
-            WHERE 
+            SELECT FROM
+                information_schema.tables
+            WHERE
                 table_name = 'katas'
             );`
         )
@@ -142,9 +151,9 @@ describe("seed", () => {
       return db
         .query(
           `SELECT EXISTS (
-            SELECT FROM 
-                information_schema.tables 
-            WHERE 
+            SELECT FROM
+                information_schema.tables
+            WHERE
                 table_name = 'tests'
             );`
         )

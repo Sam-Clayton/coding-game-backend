@@ -9,3 +9,11 @@ export function decode(str) {
 export function isPrimitive(data) {
   return data !== Object(data);
 }
+
+export function formatData(data) {
+  const order = Object.keys(data[0]);
+  return data.map((element) => {
+    const converted = this.convertTimestampToDate(element);
+    return order.map((key) => converted[key]);
+  });
+}

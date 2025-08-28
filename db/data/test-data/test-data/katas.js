@@ -1,8 +1,7 @@
 export default [
   {
     title: "Add Two Numbers",
-    description:
-      "Write a function that takes two numbers and returns their sum",
+    description:"Write a function that takes two numbers and returns their sum",
     initial_code: "function addNumbers(a, b) {}",
     solution_code: "function addNumbers(a, b) { return a + b }",
     difficulty: "easy",

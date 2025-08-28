@@ -1,4 +1,7 @@
 import db from "../connection.js";
+import { formatData } from "../../utils.js";
+
+
 import {
   dropTables,
   insertData,
@@ -9,7 +12,6 @@ import {
   createNotes,
   createKataTags,
 } from "./manage-tables.js";
-import { formatData } from "../../utils.js";
 
 export async function seed({ kataData, testData, hintData, tagData }) {
   try {

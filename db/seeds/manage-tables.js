@@ -18,6 +18,7 @@ export async function insertData(table, data, ...columns) {
         )
       : format(`INSERT INTO %I VALUES %L RETURNING *;`, table, data);
 
+  console.log(sql, "<---------- SQL");
   return await db.query(sql);
 }
 
@@ -45,7 +46,7 @@ export async function createTests() {
     (
       test_id SERIAL PRIMARY KEY,
       kata_id INT NOT NULL REFERENCES katas(kata_id),
-      input TEXT[] NOT NULL,
+      input TEXT DEFAULT NULL,
       expected TEXT NOT NULL
     )
     `

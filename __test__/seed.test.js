@@ -2,8 +2,6 @@ import db from "../db/connection.js";
 import { seed } from "../db/seeds/seed.js";
 import data from "../db/data/test-data/test-data/index.js";
 
-console.log(data);
-
 beforeAll(() => seed(data));
 afterAll(() => db.end());
 

@@ -12,8 +12,6 @@ import {
 import { formatData } from "../../utils.js";
 
 export async function seed({ kataData, testData, hintData, tagData }) {
-  console.log(kataData);
-
   try {
     await dropTables("kata_tags", "tests", "hints", "notes", "tags", "katas");
 
@@ -24,12 +22,27 @@ export async function seed({ kataData, testData, hintData, tagData }) {
     await createNotes();
     await createKataTags();
 
-    await insertData("katas", formatData(kataData));
-    await insertData("tests", formatData(testData));
-    await insertData("hints", formatData(hintData));
-    await insertData("tags", formatData(tagData));
-    await insertData("notes", formatData(noteData));
+    console.log("hello");
+    await insertData(
+      "katas",
+      formatData(kataData),
+      "title",
+      "description",
+      "initial_code",
+      "solution_code",
+      "difficulty",
+      "created_at"
+    );
+    await insertData(
+      "tests",
+      formatData(testData),
+      "kata_id",
+      "input",
+      "expected"
+    );
+    await insertData("hints", formatData(hintData), "kata_id", "hint_text");
+    await insertData("tags", formatData(tagData), "name");
   } catch (err) {
-    return err;
+    console.log(err);
   }
 }

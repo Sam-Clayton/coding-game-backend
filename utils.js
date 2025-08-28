@@ -13,7 +13,12 @@ export function isPrimitive(data) {
 export function formatData(data) {
   const order = Object.keys(data[0]);
   return data.map((element) => {
-    const converted = this.convertTimestampToDate(element);
+    const converted = convertTimestampToDate(element);
     return order.map((key) => converted[key]);
   });
+}
+
+export function convertTimestampToDate({ created_at, ...otherProperties }) {
+  if (!created_at) return { ...otherProperties };
+  return { created_at: new Date(created_at), ...otherProperties };
 }

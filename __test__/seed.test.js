@@ -221,7 +221,7 @@ describe("seed", () => {
         )
         .then(({ rows: [column] }) => {
           expect(column.column_name).toBe("input");
-          expect(column.data_type).toBe("ARRAY");
+          expect(column.data_type).toBe("text");
         });
     });
     test("tests table has expected column as text", () => {

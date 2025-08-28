@@ -1,4 +1,7 @@
 import db from "../connection.js";
+import { formatData } from "../../utils.js";
+
+
 import {
   dropTables,
   insertData,

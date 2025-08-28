@@ -9,7 +9,6 @@ import {
   createNotes,
   createKataTags,
 } from "./manage-tables.js";
-import { formatData } from "../../utils.js";
 
 export async function seed({ kataData, testData, hintData, tagData }) {
   try {

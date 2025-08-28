@@ -1,13 +1,6 @@
-export function encode(str) {
-  return Buffer.from(str).toString("base64");
-}
-
-export function decode(str) {
-  return Buffer.from(str, "base64").toString("utf-8");
-}
-
-export function isPrimitive(data) {
-  return data !== Object(data);
+export function convertTimestampToDate({ created_at, ...otherProperties }) {
+  if (!created_at) return { ...otherProperties };
+  return { created_at: new Date(created_at), ...otherProperties };
 }
 
 export function formatData(data) {
@@ -18,7 +11,14 @@ export function formatData(data) {
   });
 }
 
-export function convertTimestampToDate({ created_at, ...otherProperties }) {
-  if (!created_at) return { ...otherProperties };
-  return { created_at: new Date(created_at), ...otherProperties };
+export function encode(str) {
+  return Buffer.from(str).toString("base64");
+}
+
+export function decode(str) {
+  return Buffer.from(str, "base64").toString("utf-8");
+}
+
+export function isPrimitive(data) {
+  return data !== Object(data);
 }

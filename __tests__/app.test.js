@@ -1,5 +1,11 @@
 import request from "supertest";
 import app from "../app.js";
+import db from "../db/connection.js";
+import { seed } from "../db/seeds/seed.js";
+import data from "../db/data/test-data";
+
+beforeEach(() => seed(data));
+afterAll(() => db.end());
 
 describe("GET /api/katas", () => {
   test("200: gets all katas", () => {

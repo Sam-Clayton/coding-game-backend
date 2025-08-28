@@ -1,6 +1,6 @@
 import db from "../db/connection.js";
 import { seed } from "../db/seeds/seed.js";
-import data from "../db/data/test-data/test-data/index.js";
+import * as data from "../db/data/test-data/index.js";
 
 beforeAll(() => seed(data));
 afterAll(() => db.end());
@@ -21,7 +21,6 @@ describe("seed", () => {
           expect(exists).toBe(true);
         });
     });
-
     test("katas table has kata_id column as a serial", () => {
       return db
         .query(
@@ -130,7 +129,6 @@ describe("seed", () => {
           expect(column.data_type).toBe("timestamp without time zone");
         });
     });
-
     test("created_at column has default value of the current timestamp", () => {
       return db
         .query(
@@ -159,7 +157,6 @@ describe("seed", () => {
           expect(exists).toBe(true);
         });
     });
-
     test("tests table has test_id column as a serial", () => {
       return db
         .query(
@@ -253,7 +250,6 @@ describe("seed", () => {
           expect(exists).toBe(true);
         });
     });
-
     test("hints table has hint_id column as a serial", () => {
       return db
         .query(
@@ -305,16 +301,16 @@ describe("seed", () => {
           expect(rows).toHaveLength(1);
         });
     });
-    test("hints table has hint_text column as text", () => {
+    test("hints table has hint column as text", () => {
       return db
         .query(
           `SELECT column_name, data_type
             FROM information_schema.columns
             WHERE table_name = 'hints'
-            AND column_name = 'hint_text';`
+            AND column_name = 'hint';`
         )
         .then(({ rows: [column] }) => {
-          expect(column.column_name).toBe("hint_text");
+          expect(column.column_name).toBe("hint");
           expect(column.data_type).toBe("text");
         });
     });
@@ -334,24 +330,20 @@ describe("seed", () => {
           expect(exists).toBe(true);
         });
     });
-
-    test("tags table has tag_id column as a serial", () => {
+    test("tags table has tag column of varying character", () => {
       return db
         .query(
           `SELECT column_name, data_type, column_default
-            FROM information_schema.columns
-            WHERE table_name = 'tags'
-            AND column_name = 'tag_id';`
+        FROM information_schema.columns
+        WHERE table_name = 'tags'
+        AND column_name = 'tag';`
         )
         .then(({ rows: [column] }) => {
-          expect(column.column_name).toBe("tag_id");
-          expect(column.data_type).toBe("integer");
-          expect(column.column_default).toBe(
-            "nextval('tags_tag_id_seq'::regclass)"
-          );
+          expect(column.column_name).toBe("tag");
+          expect(column.data_type).toBe("character varying");
         });
     });
-    test("tags table has tag_id column as the primary key", () => {
+    test("tags table has tag column as the primary key", () => {
       return db
         .query(
           `SELECT column_name
@@ -362,20 +354,7 @@ describe("seed", () => {
             AND tc.table_name = 'tags';`
         )
         .then(({ rows: [{ column_name }] }) => {
-          expect(column_name).toBe("tag_id");
-        });
-    });
-    test("tags table has name column of varying character", () => {
-      return db
-        .query(
-          `SELECT column_name, data_type, column_default
-            FROM information_schema.columns
-            WHERE table_name = 'tags'
-            AND column_name = 'name';`
-        )
-        .then(({ rows: [column] }) => {
-          expect(column.column_name).toBe("name");
-          expect(column.data_type).toBe("character varying");
+          expect(column_name).toBe("tag");
         });
     });
   });
@@ -453,8 +432,7 @@ describe("seed", () => {
           expect(exists).toBe(true);
         });
     });
-
-    test("has composite primary key (kata_id, tag_id)", () => {
+    test("has composite primary key (kata_id, tag)", () => {
       return db
         .query(
           `
@@ -468,10 +446,9 @@ describe("seed", () => {
         )
         .then(({ rows }) => {
           const pkColumns = rows.map((row) => row.column_name).sort();
-          expect(pkColumns).toEqual(["kata_id", "tag_id"]);
+          expect(pkColumns).toEqual(["kata_id", "tag"]);
         });
     });
-
     test("kata_id references katas(kata_id) with ON DELETE CASCADE", () => {
       return db
         .query(
@@ -492,8 +469,7 @@ describe("seed", () => {
           expect(rows[0].delete_rule).toBe("CASCADE");
         });
     });
-
-    test("tag_id references tags(tag_id) with ON DELETE CASCADE", () => {
+    test("tag references tags(tag) with ON DELETE CASCADE", () => {
       return db
         .query(
           `
@@ -505,7 +481,7 @@ describe("seed", () => {
         ON tc.constraint_name = rc.constraint_name
       WHERE tc.constraint_type = 'FOREIGN KEY'
         AND tc.table_name = 'kata_tags'
-        AND kcu.column_name = 'tag_id';
+        AND kcu.column_name = 'tag';
       `
         )
         .then(({ rows }) => {

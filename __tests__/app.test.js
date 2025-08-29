@@ -169,6 +169,49 @@ describe("POST /api/katas", () => {
   });
 });
 
+describe("GET /api/katas (tag query)", () => {
+  test.only("200: gets katas with given tag", () => {
+    return request(app)
+      .get("/api/katas?tag=numbers")
+      .expect(200)
+      .then(({ body }) => {
+        const katas = body.katas;
+        expect(Array.isArray(katas)).toBe(true);
+        katas.forEach((kata) => {
+          expect(kata.tag).toBe("numbers");
+        });
+      });
+  });
+  test("200: returns all katas when no tag query is given", () => {
+    return request(app)
+      .get("/api/katas")
+      .expect(200)
+      .then(({ body }) => {
+        const katas = body.katas;
+        expect(Array.isArray(katas)).toBe(true);
+        expect(katas.length).toBeGreaterThan(0);
+      });
+  });
+  test("200: tag exists but has no katas", () => {
+    return request(app)
+      .get("/api/katas?tag=objects")
+      .expect(200)
+      .then(({ body }) => {
+        const katas = body.katas;
+        expect(katas).toHaveLength(0);
+      });
+  });
+
+  test("404: responds with error when tag does not exist", () => {
+    return request(app)
+      .get("/api/katas?tag=nonexistenttopic")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Tag not found");
+      });
+  });
+});
+
 describe("POST /api/submission", () => {
   test.skip("201: responds with an object containing the result of the assertions", () => {
     const inputSubmission = {

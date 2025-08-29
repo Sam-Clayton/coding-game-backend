@@ -2,7 +2,7 @@ import request from "supertest";
 import app from "../app.js";
 import db from "../db/connection.js";
 import { seed } from "../db/seeds/seed.js";
-import data from "../db/data/test-data";
+import * as data from "../db/data/test-data/index.js";
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
@@ -16,27 +16,32 @@ describe("GET /api/katas", () => {
         expect(body.katas.length).toBeGreaterThan(0);
       });
   });
-  test("200: katas is an object", () => {
+
+  test("200: response body is an object with katas array", () => {
     return request(app)
       .get("/api/katas")
       .expect(200)
       .then(({ body }) => {
         expect(body).toHaveProperty("katas");
-        expect(typeof body).toBe("object");
+        expect(Array.isArray(body.katas)).toBe(true);
       });
   });
-  test("200: checks each kata has the correct properties", () => {
+
+  test("200: each kata has the correct properties", () => {
     return request(app)
       .get("/api/katas")
       .expect(200)
       .then(({ body }) => {
         const allKatas = body.katas;
+        const allowedDifficulties = ["easy", "medium", "hard"];
         allKatas.forEach((kata) => {
-          expect(typeof kata).toBe("object");
-          expect(typeof kata.id).toBe(1);
           expect(typeof kata.title).toBe("string");
           expect(typeof kata.description).toBe("string");
-          expect(typeof kata.question).toBe("string");
+          expect(typeof kata.signature).toBe("string");
+          expect(typeof kata.initial_code).toBe("string");
+          expect(typeof kata.solution_code).toBe("string");
+          expect(allowedDifficulties).toContain(kata.difficulty);
+          expect(typeof kata.created_at).toBe("string");
         });
       });
   });
@@ -58,10 +63,15 @@ describe("GET /api/katas/:id", () => {
       .expect(200)
       .then((data) => {
         const kata = data.body;
-        expect(kata.id).toBe(1);
+        const allowedDifficulties = ["easy", "medium", "hard"];
+        expect(kata.kata_id).toBe(1);
         expect(typeof kata.title).toBe("string");
         expect(typeof kata.description).toBe("string");
-        expect(typeof kata.question).toBe("string");
+        expect(typeof kata.signature).toBe("string");
+        expect(typeof kata.initial_code).toBe("string");
+        expect(typeof kata.solution_code).toBe("string");
+        expect(allowedDifficulties).toContain(kata.difficulty);
+        expect(typeof kata.created_at).toBe("string");
       });
   });
 });

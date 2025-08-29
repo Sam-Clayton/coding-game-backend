@@ -1,6 +1,6 @@
 import express from "express";
-import { katasRouter } from "./katas.router.js";
-import { submissionRouter } from "./submission.router.js";
+import katasRouter from "./katas.router.js";
+import submissionRouter from "./submission.router.js";
 
 const apiRouter = express.Router();
 

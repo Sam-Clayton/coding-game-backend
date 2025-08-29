@@ -27,3 +27,24 @@ export const fetchKataById = (id) => {
       return rows[0];
     });
 };
+
+export const insertKata = ({
+  title,
+  description,
+  initial_code,
+  solution_code,
+  difficulty,
+}) => {
+  return db
+    .query(
+      `
+      INSERT INTO katas 
+        (title, description, initial_code, solution_code, difficulty) 
+      VALUES 
+        ($1, $2, $3, $4, $5)
+      RETURNING *;
+      `,
+      [title, description, initial_code, solution_code, difficulty]
+    )
+    .then(({ rows }) => rows[0]);
+};

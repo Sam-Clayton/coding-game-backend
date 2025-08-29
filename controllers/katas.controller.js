@@ -1,4 +1,4 @@
-import { fetchAllKatas, fetchKataById } from "../models/katas.model.js";
+import { fetchAllKatas, fetchKataById, insertKata} from "../models/katas.model.js";
 
 export const getAllKatas = (req, res, next) => {
   fetchAllKatas()
@@ -23,4 +23,24 @@ export const getKataById = (req, res, next) => {
       if (err.status) return res.status(err.status).send({ msg: err.msg });
       next(err);
     });
+};
+
+export const postKata = (req, res, next) => {
+  const { title, description, initial_code, solution_code, difficulty } = req.body;
+
+  if (
+    !title ||
+    !description ||
+    !initial_code ||
+    !solution_code ||
+    !["easy", "medium", "hard"].includes(difficulty)
+  ) {
+    return res.status(400).send({ msg: "400 Bad Request - invalid or missing fields" });
+  }
+
+  insertKata({ title, description, initial_code, solution_code, difficulty })
+    .then((newKata) => {
+      res.status(201).send({ kata: newKata });
+    })
+    .catch(next);
 };

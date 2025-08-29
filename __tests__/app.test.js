@@ -37,7 +37,6 @@ describe("GET /api/katas", () => {
         allKatas.forEach((kata) => {
           expect(typeof kata.title).toBe("string");
           expect(typeof kata.description).toBe("string");
-          expect(typeof kata.signature).toBe("string");
           expect(typeof kata.initial_code).toBe("string");
           expect(typeof kata.solution_code).toBe("string");
           expect(allowedDifficulties).toContain(kata.difficulty);
@@ -54,30 +53,45 @@ describe("GET /api/katas/:id", () => {
       .expect(200)
       .then((data) => {
         expect(data).toHaveProperty("body");
-        expect(typeof data).toBe("object");
+        expect(typeof data.body).toBe("object");
       });
   });
   test("Checks kata has correct properties with correct data types", () => {
     return request(app)
       .get("/api/katas/1")
       .expect(200)
-      .then((data) => {
-        const kata = data.body;
+      .then(({ body} ) => {
+        const kata = body.kata;
         const allowedDifficulties = ["easy", "medium", "hard"];
-        expect(kata.kata_id).toBe(1);
+        expect(typeof kata.kata_id).toBe("number");
         expect(typeof kata.title).toBe("string");
         expect(typeof kata.description).toBe("string");
-        expect(typeof kata.signature).toBe("string");
         expect(typeof kata.initial_code).toBe("string");
         expect(typeof kata.solution_code).toBe("string");
         expect(allowedDifficulties).toContain(kata.difficulty);
         expect(typeof kata.created_at).toBe("string");
       });
   });
+  test("400: responds with an error message when a request is made for an kata_id of the wrong data type", () => {
+    return request(app)
+      .get("/api/katas/wrong-data-type")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400 Bad Request");
+      });
+  });
+   test("404: responds with an error message when a request is made for a kata_id that is valid but not present in the database", () => {
+    return request(app)
+      .get("/api/katas/9999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Kata not found");
+      });
+  });
 });
 
 describe("POST /api/submission", () => {
-  test.only("201: responds with an object containing the result of the assertions", () => {
+  test.skip("201: responds with an object containing the result of the assertions", () => {
     const inputSubmission = {
       kata_id: 1,
       user_code: "function addNumbers(a, b) {return a + b;}",

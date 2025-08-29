@@ -5,7 +5,7 @@ export const fetchAllKatas = () => {
   return db
     .query(
       `
-    SELECT title, description, signature, initial_code, solution_code, difficulty, created_at 
+    SELECT title, description, initial_code, solution_code, difficulty, created_at 
     FROM katas
   `
     )
@@ -15,7 +15,7 @@ export const fetchAllKatas = () => {
 export const fetchKataById = (id) => {
   return db
     .query(
-      `SELECT kata_id, title, signature, description, initial_code, solution_code, difficulty, created_at
+      `SELECT kata_id, title, description, initial_code, solution_code, difficulty, created_at
      FROM katas
      WHERE kata_id = $1;`,
       [id]

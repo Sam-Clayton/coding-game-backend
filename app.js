@@ -1,11 +1,12 @@
-import { getKataById } from "./controllers/katas.controller.js";
-import { postSubmission } from "./controllers/submission.controller.js";
-
 import express from "express";
+import { handleBadRequest, handleServerError } from "./error-handlers/index.js";
 
 const app = express();
+app.use(express.json());
 
-app.get("/katas/:id", getKataById);
-app.post("/api/submission", postSubmission);
+app.use("/api", apiRouter);
+
+app.use(handleBadRequest);
+app.use(handleServerError);
 
 export default app;

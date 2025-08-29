@@ -1,4 +1,2 @@
-import { handleBadRequest } from "./handleBadRequest";
-import { handleServerError } from "./handleServerError";
-
-export { handleBadRequest, handleServerError };
+export { default as handleBadRequest } from "./handleBadRequest";
+export { default as handleServerError } from "./handleServerError";

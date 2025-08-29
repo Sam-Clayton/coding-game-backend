@@ -3,25 +3,20 @@ import { testsQuery } from "../queries/tests.query.js";
 import { isPrimitive } from "../utils.js";
 
 export async function postSubmission(req, res) {
-  const { code, signature, kata_id } = req.body;
+  const { kata_id, user_code } = req.body;
 
-  // const { input, expected } = testsQuery(kata_id);
-  const input = [1, 2];
-  const expected = 3;
+  const { signature, input, expected } = testsQuery(kata_id);
 
   let assertions = "";
 
-  if (isPrimitive(expected)) {
-    assertions += `assert.strictEqual(${signature}(${input[0]}, ${input[1]}), ${expected})`;
-  } else {
-    assertions += `assert.deepEqual(${signature}(${input[0]}, ${input[1]}), ${expected})`;
-  }
-
   const sourceCode = `
   import assert from "assert";
-  ${code}
+  ${user_code}
   try {
-    ${assertions};
+    assert.${
+      isPrimitive(expected) ? "strictEqual" : "deepEqual"
+    }(${signature}(${input}), ${expected})
+  ${assertions};
     console.log("PASS");
   } catch {
     console.log("FAIL");

@@ -77,6 +77,19 @@ describe("seed", () => {
           expect(column.data_type).toBe("text");
         });
     });
+    test("katas table has signature column as text", () => {
+      return db
+        .query(
+          `SELECT column_name, data_type
+            FROM information_schema.columns
+            WHERE table_name = 'katas'
+            AND column_name = 'signature';`
+        )
+        .then(({ rows: [column] }) => {
+          expect(column.column_name).toBe("signature");
+          expect(column.data_type).toBe("text");
+        });
+    });
     test("katas table has initial_code column as text", () => {
       return db
         .query(

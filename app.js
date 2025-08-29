@@ -1,5 +1,7 @@
 import express from "express";
-import { handleBadRequest, handleServerError } from "./error-handlers/index.js";
+import { handleBadRequest } from "./error-handlers/handleBadRequest.js";
+import { handleServerError } from "./error-handlers/handleServerError.js";
+import apiRouter from "./routers/api.router.js";
 
 const app = express();
 app.use(express.json());

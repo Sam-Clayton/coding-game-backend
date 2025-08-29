@@ -1,12 +1,18 @@
-import fetchKataById from "../models/katas.model.js";
+import { fetchAllKatas, fetchKataById } from "../models/katas.model.js";
 
-export const getKataById = (req, res) => {
-  fetchKataById()
-    .then((kata) => {
-      res.status(200);
-      res.json(kata);
+export const getAllKatas = (req, res, next) => {
+  fetchAllKatas()
+    .then((katas) => {
+      res.status(200).send({ katas });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
+};
+
+export const getKataById = (req, res, next) => {
+  const { kata_id } = req.params;
+  fetchKataById(kata_id)
+    .then((kata) => {
+      res.status(200).send(kata);
+    })
+    .catch(next);
 };

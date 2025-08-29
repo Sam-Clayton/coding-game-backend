@@ -1,4 +1,4 @@
-export function handleBadRequest(err, req, res, next) {
+export default function handleBadRequest(err, req, res, next) {
   err.code === "22P02" ||
   err.code === "23502" ||
   err.code === "23503" ||

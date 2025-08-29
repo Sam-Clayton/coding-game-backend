@@ -41,7 +41,6 @@ export async function createKatas() {
       kata_id SERIAL PRIMARY KEY,
       title TEXT NOT NULL,
       description TEXT NOT NULL,
-      signature TEXT NOT NULL,
       initial_code TEXT NOT NULL,
       solution_code TEXT NOT NULL,
       difficulty TEXT NOT NULL CHECK (difficulty IN ('easy', 'medium', 'hard')),
@@ -81,6 +80,7 @@ export async function createTests() {
     (
       test_id SERIAL PRIMARY KEY,
       kata_id INT NOT NULL REFERENCES katas(kata_id),
+      signature TEXT NOT NULL,
       input TEXT,
       expected TEXT NOT NULL
     );

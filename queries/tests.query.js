@@ -4,7 +4,7 @@ export async function testsQuery(id) {
   try {
     const kataTests = {
       text: `SELECT signature, input, expected FROM tests WHERE kata_id = ${id}`,
-      rowMode: "array",
+      rowMode: "object",
     };
     return await db.query(kataTests);
   } catch (err) {

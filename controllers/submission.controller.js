@@ -2,28 +2,31 @@ import { sendSubmission } from "../models/submission.model.js";
 import { testsQuery } from "../queries/tests.query.js";
 import { isPrimitive } from "../utils.js";
 
-export async function postSubmission(req, res) {
-  const { kata_id, user_code } = req.body;
-
-  const { signature, input, expected } = testsQuery(kata_id);
-
-  let assertions = "";
-
-  const sourceCode = `
-  import assert from "assert";
-  ${user_code}
+export default async function postSubmission(req, res) {
   try {
-    assert.${
-      isPrimitive(expected) ? "strictEqual" : "deepEqual"
-    }(${signature}(${input}), ${expected})
-  ${assertions};
-    console.log("PASS");
-  } catch {
-    console.log("FAIL");
-  };
-  `.trim();
+    console.log(req.body);
+    const { kata_id, user_code } = req.body;
+    const { rows } = await testsQuery(kata_id);
+    const { signature, input, expected } = rows[0];
 
-  const result = await sendSubmission(sourceCode);
-  const resultJson = JSON.stringify({ output: result });
-  res.status(201).send(resultJson);
+    const sourceCode = `
+    const assert = require("assert");
+    
+    ${user_code}
+    try {
+      assert.${
+        isPrimitive(expected) ? "strictEqual" : "deepEqual"
+      }(${signature}(${input}), ${expected});
+      console.log("PASS");
+    } catch (err) {
+      console.log("FAIL");
+    };
+    `.trim();
+    console.log(sourceCode);
+
+    const result = await sendSubmission(sourceCode);
+    res.status(201).send({ output: result });
+  } catch (err) {
+    console.log(err);
+  }
 }

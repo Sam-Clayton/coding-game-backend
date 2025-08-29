@@ -1,3 +1,3 @@
-export function handleServerError(err, req, res, next) {
+export default function handleServerError(err, req, res, next) {
   res.status(500).send({ msg: "500 Internal Server Error" });
 }

@@ -30,7 +30,6 @@ export async function seed({
       formatData(kataData),
       "title",
       "description",
-      "signature",
       "initial_code",
       "solution_code",
       "difficulty",
@@ -40,6 +39,7 @@ export async function seed({
       "tests",
       formatData(testData),
       "kata_id",
+      "signature",
       "input",
       "expected"
     );

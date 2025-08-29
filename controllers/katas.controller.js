@@ -8,11 +8,12 @@ export const getAllKatas = (req, res, next) => {
     .catch(next);
 };
 
-export const getKataById = (req, res, next) => {
-  const { kata_id } = req.params;
-  fetchKataById(kata_id)
+export default function getKataById(req, res) {
+  fetchKataById()
     .then((kata) => {
       res.status(200).send(kata);
     })
-    .catch(next);
-};
+    .catch((err) => {
+      next(err);
+    });
+}

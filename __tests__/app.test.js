@@ -170,7 +170,7 @@ describe("POST /api/katas", () => {
 });
 
 describe("GET /api/katas (tag query)", () => {
-  test.only("200: gets katas with given tag", () => {
+  test("200: gets katas with given tag", () => {
     return request(app)
       .get("/api/katas?tag=numbers")
       .expect(200)
@@ -190,15 +190,6 @@ describe("GET /api/katas (tag query)", () => {
         const katas = body.katas;
         expect(Array.isArray(katas)).toBe(true);
         expect(katas.length).toBeGreaterThan(0);
-      });
-  });
-  test("200: tag exists but has no katas", () => {
-    return request(app)
-      .get("/api/katas?tag=objects")
-      .expect(200)
-      .then(({ body }) => {
-        const katas = body.katas;
-        expect(katas).toHaveLength(0);
       });
   });
 

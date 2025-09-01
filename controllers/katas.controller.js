@@ -5,9 +5,14 @@ import {
 } from "../models/katas.model.js";
 
 export const getAllKatas = (req, res, next) => {
-  fetchAllKatas()
+  const { tag } = req.query;
+
+  fetchAllKatas(tag)
     .then((katas) => {
-      res.status(200).send({ katas });
+      if (katas === null) {
+        return res.status(404).json({ msg: "Tag not found" });
+      }
+      res.status(200).json({ katas });
     })
     .catch(next);
 };

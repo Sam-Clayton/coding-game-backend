@@ -1,12 +1,13 @@
 export default [
-    { name: "arrays" },
-    { name: "strings" },
-    { name: "numbers" },
-    { name: "loops" },
-    { name: "functions" },
-    { name: "recursion" },
-    { name: "conditionals" },
-    { name: "regex" },
-    { name: "sorting" },
-    { name: "algorithms" }
+    { tag: "arrays" },
+    { tag: "strings" },
+    { tag: "numbers" },
+    { tag: "loops" },
+    { tag: "functions" },
+    { tag: "recursion" },
+    { tag: "conditionals" },
+    { tag: "regex" },
+    { tag: "sorting" },
+    { tag: "algorithms" },
+    
 ]

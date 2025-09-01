@@ -4,7 +4,7 @@ export function isPrimitive(data) {
   return data !== Object(data);
 }
 
-export async function assertionsBuilder(testCases) {
+export function assertionsBuilder(testCases) {
   const assertions = testCases.map(
     ({ signature, input, expected }) =>
       `assert.${
@@ -26,7 +26,7 @@ export async function assertionsBuilder(testCases) {
 }
 
 export async function generateCode(userCode, testCases) {
-  const assertions = await assertionsBuilder(testCases);
+  const assertions = assertionsBuilder(testCases);
 
   let sourceCode = `
   const assert = require("assert");

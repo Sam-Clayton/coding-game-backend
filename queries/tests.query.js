@@ -4,7 +4,7 @@ export async function testsQuery(id) {
   try {
     const kataTests = {
       text: `SELECT signature, input, expected FROM tests WHERE kata_id = $1`,
-      value: [id],
+      values: [id],
       rowMode: "object",
     };
     return await db.query(kataTests);

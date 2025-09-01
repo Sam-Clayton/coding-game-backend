@@ -211,19 +211,3 @@ describe("GET /api/katas (tag query)", () => {
       });
   });
 });
-
-describe("POST /api/submission", () => {
-  test.skip("201: responds with an object containing the result of the assertions", () => {
-    const inputSubmission = {
-      kata_id: 1,
-      user_code: "function addNumbers(a, b) {return a + b;}",
-    };
-    return request(app)
-      .post("/api/submission")
-      .send(inputSubmission)
-      .expect(201)
-      .then(({ body }) => {
-        expect(body.output).toEqual("PASS\n");
-      });
-  });
-});

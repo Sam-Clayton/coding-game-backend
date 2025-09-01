@@ -5,6 +5,7 @@ const __dirname = import.meta.dirname;
 
 dotenv.config({ path: `${__dirname}/../.env.api-key` });
 const key = process.env.API_KEY;
+if (!key) throw new Error("Missing API_KEY in environment variables");
 
 export async function sendSubmission(sourceCode) {
   try {
@@ -27,8 +28,10 @@ export async function sendSubmission(sourceCode) {
       "Content-Type": "application/json",
     };
 
-    const result = await axios.post(url, data, { params, headers });
-    return decode(result.data.stdout);
+    const {
+      data: { stdout },
+    } = await axios.post(url, data, { params, headers });
+    return { result: decode(stdout).trim() };
   } catch (err) {
     console.log(err);
   }

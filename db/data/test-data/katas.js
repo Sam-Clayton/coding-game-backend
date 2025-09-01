@@ -8,14 +8,14 @@ export default [
     difficulty: "easy",
     created_at: 1595294400000,
   },
-  {
-    title: "Return Hello",
-    description: 'Write a function that always returns the string "Hello"',
-    initial_code: "function sayHello() {}",
-    solution_code: 'function sayHello() { return "Hello"; }',
-    difficulty: "easy",
-    created_at: 1595467200000,
-  },
+   {
+        title: "Check Even Number",
+        description: "Return true if the number is even, otherwise false",
+        initial_code: "function isEven(n) {}",
+        solution_code: "function isEven(n) { return n % 2 === 0 }",
+        difficulty: "easy",
+        created_at: 1595380800000
+    },
   {
     title: "Reverse a String",
     description: "Write a function that takes a string and returns it reversed",

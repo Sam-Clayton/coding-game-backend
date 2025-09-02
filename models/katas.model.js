@@ -1,5 +1,6 @@
 import app from "../app.js";
 import db from "../db/connection.js";
+import format from "pg-format";
 
 export const fetchAllKatas = (tag) => {
   if (tag) {
@@ -82,4 +83,22 @@ export const insertKata = ({
       [title, description, initial_code, solution_code, difficulty]
     )
     .then(({ rows }) => rows[0]);
+};
+
+export const insertKataTags = (kata_id, tags) => {
+  if (!tags || !tags.length) return Promise.resolve();
+
+  const tagValues = tags.map((tag) => [tag]);
+  const insertTagsQuery = format(
+    `INSERT INTO tags (tag) VALUES %L ON CONFLICT (tag) DO NOTHING;`,
+    tagValues
+  );
+
+  const kataTagValues = tags.map((tag) => [kata_id, tag]);
+  const insertKataTagsQuery = format(
+    `INSERT INTO kata_tags (kata_id, tag) VALUES %L ON CONFLICT (kata_id, tag) DO NOTHING;`,
+    kataTagValues
+  );
+
+  return db.query(insertTagsQuery).then(() => db.query(insertKataTagsQuery));
 };

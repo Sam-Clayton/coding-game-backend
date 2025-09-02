@@ -2,6 +2,7 @@ import {
   fetchAllKatas,
   fetchKataById,
   insertKata,
+  insertKataTags,
   selectKataTags,
 } from "../models/katas.model.js";
 
@@ -53,8 +54,7 @@ export const getKataTags = (req, res, next) => {
 };
 
 export const postKata = (req, res, next) => {
-  const { title, description, initial_code, solution_code, difficulty } =
-    req.body;
+  const { title, description, initial_code, solution_code, difficulty, tags } = req.body;
 
   if (
     !title ||
@@ -69,8 +69,16 @@ export const postKata = (req, res, next) => {
   }
 
   insertKata({ title, description, initial_code, solution_code, difficulty })
-    .then((newKata) => {
-      res.status(201).send({ kata: newKata });
-    })
-    .catch(next);
-};
+  .then(async (newKata) => {
+    if (tags && Array.isArray(tags)) {
+      await insertKataTags(newKata.kata_id, tags);
+      newKata.tags = tags;
+    }
+    return newKata;
+  })
+  .then((newKata) => res.status(201).json({ kata: newKata }))
+  .catch(err => {
+  console.error("POST /api/katas error:", err);
+  next(err);
+});
+}

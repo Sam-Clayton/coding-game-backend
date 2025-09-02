@@ -148,37 +148,32 @@ describe("GET /api/katas/:id/tags", () => {
 });
 
 describe("POST /api/katas", () => {
+  const baseKata = {
+    title: "Multiply two numbers",
+    description:
+      "Write a function that multiplies two numbers and returns the result",
+    initial_code: "function multiply(a, b) { }",
+    solution_code: "function multiply(a, b) { return a * b; }",
+    difficulty: "easy",
+  };
+
   test("201: checks the posted kata is an object", () => {
-    const newKata = {
-      title: "Multiply two numbers",
-      description:
-        "Write a function that multiplies two numbers and returns the result",
-      initial_code: "function multiply(a, b) { }",
-      solution_code: "function multiply(a, b) { return a * b; }",
-      difficulty: "easy",
-    };
     return request(app)
       .post("/api/katas")
-      .send(newKata)
+      .send(baseKata)
       .expect(201)
-      .then(({ body: comment }) => {
-        expect(typeof comment).toBe("object");
+      .then((res) => {
+        expect(typeof res.body).toBe("object");
       });
   });
+
   test("201: checks the posted kata has correct properties", () => {
-    const newKata = {
-      title: "Multiply two numbers",
-      description:
-        "Write a function that multiplies two numbers and returns the result",
-      initial_code: "function multiply(a, b) { }",
-      solution_code: "function multiply(a, b) { return a * b; }",
-      difficulty: "easy",
-    };
     return request(app)
       .post("/api/katas")
-      .send(newKata)
+      .send(baseKata)
       .expect(201)
-      .then(({ body: { kata } }) => {
+      .then((res) => {
+        const { kata } = res.body;
         expect(typeof kata.kata_id).toBe("number");
         expect(typeof kata.title).toBe("string");
         expect(typeof kata.description).toBe("string");
@@ -188,40 +183,58 @@ describe("POST /api/katas", () => {
         expect(typeof kata.created_at).toBe("string");
       });
   });
-  test("201: checks the total number of katas had gone up by 1", async () => {
-    const newKata = {
-      title: "Multiply two numbers",
-      description:
-        "Write a function that multiplies two numbers and returns the result",
-      initial_code: "function multiply(a, b) { }",
-      solution_code: "function multiply(a, b) { return a * b; }",
-      difficulty: "easy",
-    };
 
-    const { rows: beforeRows } = await db.query(`SELECT * FROM katas;`);
-    const beforeCount = beforeRows.length;
+  test("201: checks the posted kata with tags inserts correctly", () => {
+    const kataWithTags = { ...baseKata, tags: ["math", "arrays"] };
+    let kataId;
 
-    await request(app).post("/api/katas").send(newKata).expect(201);
-
-    const { rows: AfterRows } = await db.query(`SELECT * FROM katas;`);
-    const AfterCount = AfterRows.length;
-
-    expect(AfterCount - beforeCount).toBe(1);
-  });
-  test("400: responds with an error message when a request does not include all the required keys", () => {
-    const newKata = {
-      title: "Multiply two numbers",
-      description: "",
-      initial_code: "function multiply(a, b) { }",
-      solution_code: "function multiply(a, b) { return a * b; }",
-      difficulty: "",
-    };
     return request(app)
       .post("/api/katas")
-      .send(newKata)
+      .send(kataWithTags)
+      .expect(201)
+      .then((res) => {
+        const { kata } = res.body;
+        kataId = kata.kata_id;
+
+        return db.query("SELECT tag FROM kata_tags WHERE kata_id = $1", [
+          kataId,
+        ]);
+      })
+      .then((result) => {
+        const insertedTags = result.rows.map((r) => r.tag);
+        expect(insertedTags).toEqual(expect.arrayContaining(kataWithTags.tags));
+      });
+  });
+
+  test("201: checks the total number of katas, tags, and kata_tags have gone up", async () => {
+    const kataWithTags = { ...baseKata, tags: ["math-check"] };
+
+    const { rows: beforeKatas } = await db.query("SELECT * FROM katas;");
+    const { rows: beforeTags } = await db.query("SELECT * FROM tags;");
+    const { rows: beforeKataTags } = await db.query("SELECT * FROM kata_tags;");
+
+    await request(app).post("/api/katas").send(kataWithTags).expect(201);
+
+    const { rows: afterKatas } = await db.query("SELECT * FROM katas;");
+    const { rows: afterTags } = await db.query("SELECT * FROM tags;");
+    const { rows: afterKataTags } = await db.query("SELECT * FROM kata_tags;");
+
+    expect(afterKatas.length - beforeKatas.length).toBe(1);
+    expect(afterTags.length - beforeTags.length).toBe(1);
+    expect(afterKataTags.length - beforeKataTags.length).toBe(1);
+  });
+
+  test("400: responds with an error message when required keys are missing", () => {
+    const invalidKata = { ...baseKata, description: "", difficulty: "" };
+
+    return request(app)
+      .post("/api/katas")
+      .send(invalidKata)
       .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("400 Bad Request - invalid or missing fields");
+      .then((res) => {
+        expect(res.body.msg).toBe(
+          "400 Bad Request - invalid or missing fields"
+        );
       });
   });
 });

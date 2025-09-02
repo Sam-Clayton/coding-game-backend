@@ -3,6 +3,7 @@ import app from "../app.js";
 import db from "../db/connection.js";
 import { seed } from "../db/seeds/seed.js";
 import * as data from "../db/data/test-data/index.js";
+import endpointsJson from "../endpoints.json" with { type: "json" };
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
@@ -200,5 +201,14 @@ describe("GET /api/katas (tag query)", () => {
       .then(({ body }) => {
         expect(body.msg).toBe("Tag not found");
       });
+  });
+});
+
+describe("GET /api", () => {
+  test("200: responds with an object detailing the documentation for each endpoint", async () => {
+    const {
+      body: { endpoints },
+    } = await request(app).get("/api").expect(200);
+    expect(endpoints).toEqual(endpointsJson);
   });
 });

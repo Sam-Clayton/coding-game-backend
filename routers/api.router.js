@@ -5,7 +5,7 @@ import getApi from "../controllers/api.controller.js";
 
 const apiRouter = express.Router();
 
-apiRouter.use("/", getApi);
+apiRouter.get("/", getApi);
 apiRouter.use("/katas", katasRouter);
 apiRouter.use("/submission", submissionRouter);
 

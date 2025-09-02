@@ -1,0 +1,74 @@
+{
+  "GET /api": {
+    "description": "serves up a JSON representation of all the available endpoints of the api"
+  },
+  "GET /api/katas": {
+    "description": "serves an array of all katas",
+    "exampleResponse": [
+      {
+        "kata_id": 1,
+        "title": "Add Two Numbers",
+        "description": "Write a function that takes two numbers and returns their sum",
+        "initial_code": "function addNumbers(a, b)",
+        "solution_code": "function addNumbers(a, b) { return a + b }",
+        "difficulty": "easy",
+        "created_at": "2020-07-21 01:20:00"
+      }
+    ]
+  },
+  "GET /api/katas/:kata_id": {
+    "description": "serves the specified kata",
+    "example response": {
+      "kata_id": 1,
+      "title": "Add Two Numbers",
+      "description": "Write a function that takes two numbers and returns their sum",
+      "initial_code": "function addNumbers(a, b)",
+      "solution_code": "function addNumbers(a, b) { return a + b }",
+      "difficulty": "easy",
+      "created_at": "2020-07-21 01:20:00"
+    }
+  },
+  "POST /api/katas": {
+    "description": "inserts a new kata into the database",
+    "exampleRequestBody": {
+      "title": "New Kata",
+      "description": "This is a new kata",
+      "initial_code": "function newKata(params)",
+      "solution_code": "function newKata(params) { solution }",
+      "difficulty": "easy, medium, or hard"
+    },
+    "exampleResponse": {
+      "kata_id": 42,
+      "title": "New Kata",
+      "description": "This is a new kata",
+      "initial_code": "function newKata(params)",
+      "solution_code": "function newKata(params) { solution }",
+      "difficulty": "easy, medium, or hard",
+      "created_at": "2025-09-01 16:21"
+    }
+  },
+  "POST /api/submission": {
+    "description": "sends user submitted code to be validated and tested",
+    "exampleRequestBodyPass": {
+      "kata_id": 1,
+      "user_code": "function addNumbers(a, b) { return a + b }"
+    },
+    "exampleResponsePass": {
+      "result": "PASS"
+    },
+    "exampleRequestBodyFail": {
+      "kata_id": 1,
+      "user_code": "function addNumbers(a, b) { return a }"
+    },
+    "exampleResponseFail": {
+      "result": "FAIL"
+    },
+    "exampleRequestBodyErr": {
+      "kata_id": 1,
+      "user_code": "function addNumbers(a, b) { return c }"
+    },
+    "exampleResponseErr": {
+      "result": "ReferenceError: addNumbers is not defined"
+    }
+  }
+}

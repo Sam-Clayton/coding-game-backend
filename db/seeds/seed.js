@@ -32,9 +32,9 @@ export async function seed({
       "description",
       "initial_code",
       "solution_code",
-      "difficulty",
-      "created_at"
+      "difficulty"
     );
+
     await insertData(
       "tests",
       formatData(testData),

@@ -54,7 +54,17 @@ describe.skip("POST /api/submission", () => {
       .post("/api/submission")
       .send(inputSubmission)
       .expect(200);
-    console.log(body);
+    expect(body).toEqual({
+      result:
+        "ReferenceError: addNumbers is not defined\n" +
+        "    at Object.<anonymous> (/box/script.js:7:10)\n" +
+        "    at Module._compile (internal/modules/cjs/loader.js:959:30)\n" +
+        "    at Object.Module._extensions..js (internal/modules/cjs/loader.js:995:10)\n" +
+        "    at Module.load (internal/modules/cjs/loader.js:815:32)\n" +
+        "    at Function.Module._load (internal/modules/cjs/loader.js:727:14)\n" +
+        "    at Function.Module.runMain (internal/modules/cjs/loader.js:1047:10)\n" +
+        "    at internal/main/run_main_module.js:17:11",
+    });
   });
   test("400: responds with an error message when the kata_id is invalid", async () => {
     const inputSubmission = {

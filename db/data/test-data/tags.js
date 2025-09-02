@@ -4,4 +4,5 @@ export default [
   { tag: "numbers" },
   { tag: "loops" },
   { tag: "functions" },
+  { tag: "conditionals" },
 ];

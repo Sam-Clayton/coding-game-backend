@@ -91,6 +91,52 @@ describe("GET /api/katas/:id", () => {
   });
 });
 
+describe("GET /api/katas/:id/tags", () => {
+  test("200: responds with an object containing kata_id and tags array", () => {
+    return request(app)
+      .get("/api/katas/3/tags")
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body);
+        expect(body).toHaveProperty("kata_id");
+        expect(body).toHaveProperty("tags");
+        expect(typeof body.kata_id).toBe("number");
+        expect(Array.isArray(body.tags)).toBe(true);
+      });
+  });
+
+  test("200: responds with correct tags for a kata", () => {
+    return request(app)
+      .get("/api/katas/2/tags")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.kata_id).toBe(2);
+        expect(Array.isArray(body.tags)).toBe(true);
+        expect(body.tags).toEqual(
+          expect.arrayContaining(["numbers", "conditionals"])
+        );
+      });
+  });
+
+  test("400: responds with an error when kata_id is of the wrong data type", () => {
+    return request(app)
+      .get("/api/katas/not-a-number/tags")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400 Bad Request");
+      });
+  });
+
+  test("404: responds with an error when kata_id is valid but not in the database", () => {
+    return request(app)
+      .get("/api/katas/9999/tags")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Tags not found");
+      });
+  });
+});
+
 describe("POST /api/katas", () => {
   test("201: checks the posted kata is an object", () => {
     const newKata = {

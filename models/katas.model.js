@@ -43,6 +43,26 @@ export const fetchKataById = (id) => {
     });
 };
 
+export function selectKataTags(kata_id) {
+  return db
+    .query(
+      `
+    SELECT ARRAY_AGG(tag) AS tags
+    FROM kata_tags
+    WHERE kata_id = $1
+    GROUP BY kata_id;
+    `,
+      [kata_id]
+    )
+    .then((result) => {
+      if (result.rowCount === 0) {
+        return null;
+      }
+      const row = result.rows[0];
+      return { kata_id, tags: row.tags || [] };
+    });
+}
+
 export const insertKata = ({
   title,
   description,

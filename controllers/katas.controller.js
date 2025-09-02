@@ -2,6 +2,7 @@ import {
   fetchAllKatas,
   fetchKataById,
   insertKata,
+  selectKataTags,
 } from "../models/katas.model.js";
 
 export const getAllKatas = (req, res, next) => {
@@ -32,6 +33,23 @@ export const getKataById = (req, res, next) => {
       if (err.status) return res.status(err.status).send({ msg: err.msg });
       next(err);
     });
+};
+
+export const getKataTags = (req, res, next) => {
+  const kata_id = Number(req.params.kata_id);
+
+  if (isNaN(kata_id) || kata_id <= 0) {
+    return res.status(400).json({ msg: "400 Bad Request" });
+  }
+
+  selectKataTags(kata_id)
+    .then((result) => {
+      if (!result) {
+        return res.status(404).json({ msg: "Tags not found" });
+      }
+      res.status(200).json(result);
+    })
+    .catch((err) => next(err));
 };
 
 export const postKata = (req, res, next) => {

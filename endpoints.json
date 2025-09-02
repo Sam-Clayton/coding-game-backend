@@ -28,6 +28,13 @@
       "created_at": "2020-07-21 01:20:00"
     }
   },
+  "GET /api/katas/:kata_id/tags": {
+    "description": "serves the tags associated with the specified kata",
+    "exampleResponse": {
+      "kata_id": 2,
+      "tags": ["numbers", "conditionals"]
+    }
+  },
   "POST /api/katas": {
     "description": "inserts a new kata into the database",
     "exampleRequestBody": {

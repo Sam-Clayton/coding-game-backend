@@ -22,4 +22,11 @@ export default [
       'function reverseString(str) { return str.split("").reverse().join(""); }',
     difficulty: "medium",
   },
+  {
+    title: "Find Maximum Number",
+    description: "Return the largest number from an array",
+    initial_code: "function findMax(arr) {}",
+    solution_code: "function findMax(arr) { return Math.max(...arr) }",
+    difficulty: "easy",
+  },
 ];

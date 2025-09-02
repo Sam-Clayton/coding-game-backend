@@ -45,21 +45,21 @@ export const fetchKataById = (id) => {
 
 export function selectKataTags(kata_id) {
   return db
-    .query(
-      `
-    SELECT ARRAY_AGG(tag) AS tags
-    FROM kata_tags
-    WHERE kata_id = $1
-    GROUP BY kata_id;
-    `,
-      [kata_id]
-    )
-    .then((result) => {
-      if (result.rowCount === 0) {
-        return null;
-      }
-      const row = result.rows[0];
-      return { kata_id, tags: row.tags || [] };
+    .query(`SELECT kata_id FROM katas WHERE kata_id = $1;`, [kata_id])
+    .then((kataResult) => {
+      if (!kataResult.rows.length) return null;
+
+      return db
+        .query(
+          `SELECT ARRAY_AGG(tag) AS tags
+       FROM kata_tags
+       WHERE kata_id = $1;`,
+          [kata_id]
+        )
+        .then((tagsResult) => {
+          const tags = tagsResult.rows[0]?.tags || [];
+          return { kata_id, tags };
+        });
     });
 }
 

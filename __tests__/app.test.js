@@ -97,7 +97,6 @@ describe("GET /api/katas/:id/tags", () => {
       .get("/api/katas/3/tags")
       .expect(200)
       .then(({ body }) => {
-        console.log(body);
         expect(body).toHaveProperty("kata_id");
         expect(body).toHaveProperty("tags");
         expect(typeof body.kata_id).toBe("number");
@@ -115,6 +114,17 @@ describe("GET /api/katas/:id/tags", () => {
         expect(body.tags).toEqual(
           expect.arrayContaining(["numbers", "conditionals"])
         );
+      });
+  });
+
+  test("200: responds with empty tags array if kata exists but has no tags", () => {
+    return request(app)
+      .get("/api/katas/4/tags")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.kata_id).toBe(4);
+        expect(Array.isArray(body.tags)).toBe(true);
+        expect(body.tags).toEqual([]);
       });
   });
 

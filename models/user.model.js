@@ -8,20 +8,20 @@ export async function findUserByClerkId(clerkUserId) {
 export async function createUser({ clerkUserId, username, avatarUrl, level,xp, isAdmin, createdAt }) {
   const result = await pool.query(
     `INSERT INTO users (clerk_user_id, username, avatar_url, level, xp, is_admin, created_at)
-     VALUES ($1, $2, $3, $4)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
      RETURNING *`,
     [clerkUserId, username, avatarUrl, level,xp, isAdmin, createdAt]
   );
   return result.rows[0];
 }
 
-export async function updateUser({ clerkUserId, username, avatarUrl, level,xp, isAdmin }) {
+export async function updateUser({ clerkUserId, username, avatarUrl }) {
   const result = await pool.query(
     `UPDATE users
-     SET username = $2, avatar_url = $3, level = $4, xp = $5, is_admin = $6, updated_at = NOW()
+     SET username = $2, avatar_url = $3
      WHERE clerk_user_id = $1
      RETURNING *`,
-    [clerkUserId, username, avatarUrl, level,xp, isAdmin]
+    [clerkUserId, username, avatarUrl]
   );
   return result.rows[0];
 }

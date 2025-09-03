@@ -1,36 +1,48 @@
-import pool from '../db.js';
+import db from "../db/connection.js";
 
-export async function findUserByClerkId(clerkUserId) {
-  const result = await pool.query('SELECT * FROM users WHERE clerk_user_id = $1', [clerkUserId]);
-  return result.rows[0];
-}
-
-export async function createUser({ clerkUserId, username, avatarUrl, isAdmin }) {
-  const result = await pool.query(
-    `INSERT INTO users (clerk_user_id, username, avatar_url, is_admin
-     VALUES ($1, $2, $3, $4)
-     RETURNING *`,
-    [clerkUserId, username, avatarUrl, isAdmin]
+export async function fetchUserById(clerk_user_id) {
+  const { rows } = await db.query(
+    `
+    SELECT * 
+    FROM users 
+    WHERE clerk_user_id = $1;
+    `,
+    [clerk_user_id]
   );
-  return result.rows[0];
+  return rows[0];
 }
 
-export async function updateUser({ clerkUserId, username, avatarUrl }) {
-  const result = await pool.query(
-    `UPDATE users
-     SET username = $2, avatar_url = $3
-     WHERE clerk_user_id = $1
-     RETURNING *`,
-    [clerkUserId, username, avatarUrl]
+export async function createUser({ clerk_user_id, username, avatar_url }) {
+  const { rows } = await db.query(
+    `
+    INSERT INTO users (clerk_user_id, username, avatar_url)
+    VALUES ($1, $2, $3)
+    RETURNING *;
+    `,
+    [clerk_user_id, username, avatar_url]
   );
-  return result.rows[0];
+  return rows[0];
 }
 
-export async function deleteUser(clerkUserId) {
-  await pool.query('DELETE FROM users WHERE clerk_user_id = $1', [clerkUserId]);
+export async function updateUser({ clerk_user_id, username, avatar_url }) {
+  const { rows } = await pool.query(
+    `
+    UPDATE users
+    SET username = $2, avatar_url = $3
+    WHERE clerk_user_id = $1
+    RETURNING *;
+    `,
+    [clerk_user_id, username, avatar_url]
+  );
+  return rows[0];
 }
 
-export async function findUserById(id) {
-  const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-  return result.rows[0];
+export async function deleteUser(clerk_user_id) {
+  await db.query(
+    `
+    DELETE FROM users 
+    WHERE clerk_user_id = $1
+    `,
+    [clerk_user_id]
+  );
 }

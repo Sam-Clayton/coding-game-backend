@@ -1,9 +1,10 @@
 import express from "express";
-import { getProfile } from "../controllers/userController.js";
-import { requireAuthApi } from "../middlewares/authMiddleware.js";
+import { getUserById, createUser } from "../controllers/user.controller.js";
+import { requireAuthApi } from "../middlewares/auth.middleware.js";
 
 const userRouter = express.Router();
 
-userRouter.get("/profile", requireAuthApi, getProfile);
+userRouter.get("/:user_id", requireAuthApi, getUserById);
+userRouter.post("/", getUserById);
 
 export default userRouter;

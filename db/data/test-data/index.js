@@ -4,3 +4,4 @@ export { default as kataTagsData } from "./kataTags.js";
 export { default as tagData } from "./tags.js";
 export { default as testData } from "./tests.js";
 export { default as achievementData } from "./achievements.js";
+export { default as userData } from "./users.js";

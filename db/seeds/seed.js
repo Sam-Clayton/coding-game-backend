@@ -20,6 +20,7 @@ export async function seed({
   kataTagsData,
   tagData,
   testData,
+  userData,
 }) {
   try {
     await dropTables(
@@ -52,6 +53,14 @@ export async function seed({
       "initial_code",
       "solution_code",
       "difficulty"
+    );
+    await insertData(
+      "users",
+      formatData(userData),
+      "clerk_user_id",
+      "username",
+      "avatar_url",
+      "is_admin"
     );
     await insertData("achievements", formatData(achievementData));
     await insertData("tags", formatData(tagData), "tag");

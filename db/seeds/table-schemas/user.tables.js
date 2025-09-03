@@ -37,7 +37,7 @@ export async function createUserKatas() {
     CREATE TABLE user_katas
     (
       user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
-      kata_id TEXT REFERENCES achievements(achievement) ON DELETE CASCADE,
+      kata_id INT REFERENCES katas(kata_id) ON DELETE CASCADE,
       completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (user_id, kata_id)
     );

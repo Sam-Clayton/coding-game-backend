@@ -34,9 +34,14 @@ A fun learning tool for people who want to improve their JavaScript skills. Prac
 5. **Start the backend server**  
    Run `npm run dev` to start the server.
 
-## API
+## APIs Guide
 
-API endpoints are coming soon!
+- GET /api
+- GET /api/katas
+- GET /api/katas/:kata_id
+- GET /api/katas/:kata_id/tags
+- POST /api/katas
+- POST /api/submission
 
 ## Deployment
 

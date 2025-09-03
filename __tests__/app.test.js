@@ -185,7 +185,7 @@ test("400: responds with an error when kata_id is negative", () => {
   });
 });
 
-describe("GET /api/katas/:id/hints", () => {
+describe("GET /api/katas/:id/hint", () => {
   test("200: responds with an object containing kata_id and hint string", () => {
     return request(app)
       .get("/api/katas/3/hint")

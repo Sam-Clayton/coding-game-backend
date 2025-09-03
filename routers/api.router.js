@@ -12,5 +12,4 @@ apiRouter.get("/profile", userRouter);
 apiRouter.use("/katas", katasRouter);
 apiRouter.use("/submission", submissionRouter);
 
-
 export default apiRouter;

@@ -1,8 +1,9 @@
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
-import { clerkMiddleware } from "@clerk/express";
+import clerkMiddleware from "@clerk/express";
 import apiRouter from "./routers/api.router.js";
+import webhookRouter from "./routers/webhook.router.js";
 import {
   handleBadRequest,
   handleCustomError,
@@ -15,14 +16,17 @@ dotenv.config({ path: `${__dirname}/../.env.${ENV}` });
 
 if (!process.env.CLERK_PUBLISHABLE_KEY && !process.env.CLERK_SECRET_KEY)
   throw new Error("No CLERK_PUBLISHABLE_KEY or CLERK_SECRET_KEY configured");
-import clerkMiddleware from '@clerk/express';
-import webhookRouter from "./routers/webhook.router.js";
 
 const app = express();
 app.use(express.json());
 
 app.use(cors());
-app.use('/api/webhooks', express.raw({ type: 'application/json' }), webhookRouter);
+
+app.use(
+  "/api/webhooks",
+  express.raw({ type: "application/json" }),
+  webhookRouter
+);
 app.use(clerkMiddleware());
 
 app.use("/api", apiRouter);

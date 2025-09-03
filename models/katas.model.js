@@ -102,3 +102,14 @@ export const insertKataTags = (kata_id, tags) => {
 
   return db.query(insertTagsQuery).then(() => db.query(insertKataTagsQuery));
 };
+
+export const findKataByTitle = (title) => {
+  return db.query("SELECT title FROM katas WHERE title = $1", [title])
+    .then(({ rows }) => rows[0]);
+};
+
+export const findKataByInitialCode = (initial_code) => {
+  return db
+    .query("SELECT * FROM katas WHERE initial_code = $1", [initial_code])
+    .then(({ rows }) => rows[0]);
+};

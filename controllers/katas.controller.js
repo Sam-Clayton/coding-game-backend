@@ -4,6 +4,8 @@ import {
   insertKata,
   insertKataTags,
   selectKataTags,
+  findKataByTitle,
+  findKataByInitialCode,
 } from "../models/katas.model.js";
 
 export const getAllKatas = (req, res, next) => {
@@ -54,7 +56,8 @@ export const getKataTags = (req, res, next) => {
 };
 
 export const postKata = (req, res, next) => {
-  const { title, description, initial_code, solution_code, difficulty, tags } = req.body;
+  const { title, description, initial_code, solution_code, difficulty, tags } =
+    req.body;
 
   if (
     !title ||
@@ -68,17 +71,48 @@ export const postKata = (req, res, next) => {
       .send({ msg: "400 Bad Request - invalid or missing fields" });
   }
 
-  insertKata({ title, description, initial_code, solution_code, difficulty })
-  .then(async (newKata) => {
-    if (tags && Array.isArray(tags)) {
-      await insertKataTags(newKata.kata_id, tags);
-      newKata.tags = tags;
-    }
-    return newKata;
-  })
-  .then((newKata) => res.status(201).json({ kata: newKata }))
-  .catch(err => {
-  console.error("POST /api/katas error:", err);
-  next(err);
-});
-}
+  if (!tags || !Array.isArray(tags) || tags.length === 0) {
+    return res
+      .status(400)
+      .send({ msg: "400 Bad Request - invalid or missing fields" });
+  }
+
+  findKataByTitle(title)
+    .then((existing) => {
+      if (existing)
+        return Promise.reject({
+          status: 409,
+          msg: "409 Conflict - kata already exists",
+        });
+      return findKataByInitialCode(initial_code);
+    })
+    .then((existingCode) => {
+      if (existingCode)
+        return Promise.reject({
+          status: 409,
+          msg: "409 Conflict - code already exists",
+        });
+      return insertKata({
+        title,
+        description,
+        initial_code,
+        solution_code,
+        difficulty,
+      });
+    })
+    .then((newKata) => {
+      if (!newKata) return;
+
+      return insertKataTags(newKata.kata_id, tags).then(() => {
+        newKata.tags = tags;
+        res.status(201).json({ kata: newKata });
+      });
+    })
+    .catch((err) => {
+      if (err.status && err.msg) {
+        return res.status(err.status).send({ msg: err.msg });
+      }
+      console.error("POST /api/katas error:", err);
+      next(err);
+    });
+};

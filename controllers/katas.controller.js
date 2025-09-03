@@ -4,6 +4,7 @@ import {
   insertKata,
   insertKataTags,
   selectKataTags,
+  selectKataHint,
   findKataByTitle,
   findKataByInitialCode,
 } from "../models/katas.model.js";
@@ -49,6 +50,22 @@ export const getKataTags = (req, res, next) => {
     .then((result) => {
       if (!result) {
         return res.status(404).json({ msg: "Tags not found" });
+      }
+      res.status(200).json(result);
+    })
+    .catch((err) => next(err));
+};
+
+export const getKataHint = (req, res, next) => {
+  const kata_id = Number(req.params.kata_id);
+  if (isNaN(kata_id) || kata_id <= 0) {
+    return res.status(400).json({ msg: "400 Bad Request" });
+  }
+
+  selectKataHint(kata_id)
+    .then((result) => {
+      if (!result) {
+        return res.status(404).json({ msg: "Hints not found" });
       }
       res.status(200).json(result);
     })

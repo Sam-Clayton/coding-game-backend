@@ -1,29 +1,49 @@
 import { formatData } from "../../utils.js";
 import {
+  createAchievements,
+  createHints,
+  createKatas,
+  createKataTags,
+  createTags,
+  createTests,
+  createUsers,
+  createUserAchievements,
+  createUserKatas,
   dropTables,
   insertData,
-  createKatas,
-  createTests,
-  createHints,
-  createTags,
-  createKataTags,
-} from "./manage-tables.js";
+} from "./table-schemas/index.js";
 
 export async function seed({
+  achievementData,
   hintData,
   kataData,
   kataTagsData,
   tagData,
   testData,
+  userData,
 }) {
   try {
-    await dropTables("kata_tags", "tags", "hints", "tests", "katas");
+    await dropTables(
+      "user_katas",
+      "user_achievements",
+      "kata_tags",
+      "tests",
+      "hints",
+      "tags",
+      "achievements",
+      "users",
+      "katas"
+    );
 
     await createKatas();
-    await createTests();
-    await createHints();
+    await createUsers();
+    await createAchievements();
     await createTags();
+    await createHints();
+    await createTests();
     await createKataTags();
+    await createUserAchievements();
+    await createUserKatas();
 
     await insertData(
       "katas",
@@ -34,7 +54,17 @@ export async function seed({
       "solution_code",
       "difficulty"
     );
-
+    await insertData(
+      "users",
+      formatData(userData),
+      "clerk_user_id",
+      "username",
+      "avatar_url",
+      "is_admin"
+    );
+    await insertData("achievements", formatData(achievementData));
+    await insertData("tags", formatData(tagData), "tag");
+    await insertData("hints", formatData(hintData), "kata_id", "hint");
     await insertData(
       "tests",
       formatData(testData),
@@ -43,8 +73,6 @@ export async function seed({
       "input",
       "expected"
     );
-    await insertData("hints", formatData(hintData), "kata_id", "hint");
-    await insertData("tags", formatData(tagData), "tag");
     await insertData("kata_tags", formatData(kataTagsData), "kata_id", "tag");
   } catch (err) {
     console.log(err);

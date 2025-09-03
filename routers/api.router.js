@@ -1,7 +1,7 @@
 import express from "express";
+import getApi from "../controllers/api.controller.js";
 import katasRouter from "./katas.router.js";
 import submissionRouter from "./submission.router.js";
-import getApi from "../controllers/api.controller.js";
 
 const apiRouter = express.Router();
 

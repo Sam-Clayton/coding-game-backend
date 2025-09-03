@@ -1,10 +1,12 @@
 import axios from "axios";
 import dotenv from "dotenv";
+import db from "../db/connection.js";
 import { encode, decode } from "../utils.js";
-const __dirname = import.meta.dirname;
 
+const __dirname = import.meta.dirname;
 dotenv.config({ path: `${__dirname}/../.env.api-key` });
 const key = process.env.API_KEY;
+
 if (!key) throw new Error("Missing API_KEY in environment variables");
 
 export async function sendSubmission(sourceCode) {
@@ -31,8 +33,31 @@ export async function sendSubmission(sourceCode) {
     const {
       data: { stdout },
     } = await axios.post(url, data, { params, headers });
-    return { result: decode(stdout).trim() };
+    const decodedOutcome = decode(stdout).trim();
+
+    return { result: decodedOutcome.split("\n")[0] };
   } catch (err) {
     console.log(err);
+  }
+}
+
+export async function updateUserKatas(user_id, kata_id) {
+  const { rows } = await db.query(
+    `
+    SELECT * FROM user_katas 
+    WHERE user_id = $1 
+    AND kata_id = $2
+    `,
+    [user_id, kata_id]
+  );
+
+  if (rows.length === 0) {
+    await db.query(
+      `
+      INSERT INTO user_katas (user_id, kata_id)
+      VALUES ($1, $2)
+      `,
+      [user_id, kata_id]
+    );
   }
 }

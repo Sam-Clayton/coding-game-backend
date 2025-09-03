@@ -81,6 +81,26 @@ describe("GET /api/katas/:id", () => {
         expect(body.msg).toBe("400 Bad Request");
       });
   });
+
+   test("400: responds with an error when kata_id is zero", () => {
+  return request(app)
+    .get("/api/katas/0")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400 Bad Request");
+    });
+});
+
+test("400: responds with an error when kata_id is negative", () => {
+  return request(app)
+    .get("/api/katas/-5")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400 Bad Request");
+    });
+});
+
+
   test("404: responds with an error message when a request is made for a kata_id that is valid but not present in the database", () => {
     return request(app)
       .get("/api/katas/9999")
@@ -137,12 +157,90 @@ describe("GET /api/katas/:id/tags", () => {
       });
   });
 
+   test("400: responds with an error when kata_id is zero", () => {
+  return request(app)
+    .get("/api/katas/0/tags")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400 Bad Request");
+    });
+});
+
+test("400: responds with an error when kata_id is negative", () => {
+  return request(app)
+    .get("/api/katas/-5/tags")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400 Bad Request");
+    });
+});
+
   test("404: responds with an error when kata_id is valid but not in the database", () => {
     return request(app)
       .get("/api/katas/9999/tags")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Tags not found");
+      });
+  });
+});
+
+describe("GET /api/katas/:id/hints", () => {
+  test("200: responds with an object containing kata_id and hint string", () => {
+    return request(app)
+      .get("/api/katas/3/hint")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toHaveProperty("kata_id");
+        expect(body).toHaveProperty("hint");
+        expect(typeof body.kata_id).toBe("number");
+        expect(typeof body.hint).toBe("string");
+      });
+  });
+
+  test("200: responds with correct hints for a kata", () => {
+    return request(app)
+      .get("/api/katas/4/hint")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.kata_id).toBe(4);
+        expect(body.hint).toBe("Use Math.max with the spread operator.");
+      });
+  });
+
+  test("400: responds with an error when kata_id is of the wrong data type", () => {
+    return request(app)
+      .get("/api/katas/not-a-number/hint")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400 Bad Request");
+      });
+  });
+
+  test("400: responds with an error when kata_id is zero", () => {
+  return request(app)
+    .get("/api/katas/0/hint")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400 Bad Request");
+    });
+});
+
+test("400: responds with an error when kata_id is negative", () => {
+  return request(app)
+    .get("/api/katas/-5/hint")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400 Bad Request");
+    });
+});
+
+  test("404: responds with an error when kata_id is valid but not in the database", () => {
+    return request(app)
+      .get("/api/katas/9999/hint")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Hints not found");
       });
   });
 });
@@ -155,7 +253,7 @@ describe("POST /api/katas", () => {
     initial_code: "function multiply(a, b) { }",
     solution_code: "function multiply(a, b) { return a * b; }",
     difficulty: "easy",
-    tags: ["math"]
+    tags: ["math"],
   };
 
   test("201: checks the posted kata is an object", () => {

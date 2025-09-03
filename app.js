@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
-import clerkMiddleware from "@clerk/express";
+import { clerkMiddleware } from "@clerk/express";
 import apiRouter from "./routers/api.router.js";
 import webhookRouter from "./routers/webhook.router.js";
 import {

@@ -16,4 +16,5 @@ if (ENV === "production") {
   config.max = 2;
 }
 
+
 export default new Pool(config);

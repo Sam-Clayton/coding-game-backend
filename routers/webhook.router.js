@@ -1,6 +1,6 @@
 import express from "express";
 import { verifyWebhook } from "@clerk/express/webhooks";
-import { createUser, updateUser, deleteUser } from "../models/user.model.js";
+import { insertUser, updateUser, deleteUser } from "../models/user.model.js";
 
 const webhookRouter = express.Router();
 
@@ -24,7 +24,7 @@ webhookRouter.post(
     try {
       switch (type) {
         case "user.created":
-          await createUser({
+          await insertUser({
             clerkUserId: data.id,
             username: data.username || null,
             avatarUrl: data.imageUrl || null,

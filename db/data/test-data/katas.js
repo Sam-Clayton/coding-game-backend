@@ -16,11 +16,11 @@ export default [
   },
   {
     title: "Reverse a String",
-    description: "Write a function that takes a string and returns it reversed",
+    description: "Return a reversed version of the input string",
     initial_code: "function reverseString(str) {}",
     solution_code:
-      'function reverseString(str) { return str.split("").reverse().join(""); }',
-    difficulty: "medium",
+      "function reverseString(str) { return str.split('').reverse().join('') }",
+    difficulty: "easy",
   },
   {
     title: "Find Maximum Number",

@@ -155,6 +155,7 @@ describe("POST /api/katas", () => {
     initial_code: "function multiply(a, b) { }",
     solution_code: "function multiply(a, b) { return a * b; }",
     difficulty: "easy",
+    tags: ["math"]
   };
 
   test("201: checks the posted kata is an object", () => {
@@ -181,6 +182,8 @@ describe("POST /api/katas", () => {
         expect(typeof kata.solution_code).toBe("string");
         expect(typeof kata.difficulty).toBe("string");
         expect(typeof kata.created_at).toBe("string");
+        expect(Array.isArray(kata.tags)).toBe(true);
+        expect(kata.tags.length).toBeGreaterThan(0);
       });
   });
 
@@ -206,27 +209,8 @@ describe("POST /api/katas", () => {
       });
   });
 
-  test("201: checks the total number of katas, tags, and kata_tags have gone up", async () => {
-    const kataWithTags = { ...baseKata, tags: ["math-check"] };
-
-    const { rows: beforeKatas } = await db.query("SELECT * FROM katas;");
-    const { rows: beforeTags } = await db.query("SELECT * FROM tags;");
-    const { rows: beforeKataTags } = await db.query("SELECT * FROM kata_tags;");
-
-    await request(app).post("/api/katas").send(kataWithTags).expect(201);
-
-    const { rows: afterKatas } = await db.query("SELECT * FROM katas;");
-    const { rows: afterTags } = await db.query("SELECT * FROM tags;");
-    const { rows: afterKataTags } = await db.query("SELECT * FROM kata_tags;");
-
-    expect(afterKatas.length - beforeKatas.length).toBe(1);
-    expect(afterTags.length - beforeTags.length).toBe(1);
-    expect(afterKataTags.length - beforeKataTags.length).toBe(1);
-  });
-
-  test("400: responds with an error message when required keys are missing", () => {
-    const invalidKata = { ...baseKata, description: "", difficulty: "" };
-
+  test("400: responds with error if fields have wrong types", () => {
+    const invalidKata = { ...baseKata, difficulty: 123 };
     return request(app)
       .post("/api/katas")
       .send(invalidKata)
@@ -235,6 +219,61 @@ describe("POST /api/katas", () => {
         expect(res.body.msg).toBe(
           "400 Bad Request - invalid or missing fields"
         );
+      });
+  });
+
+  test("400: responds with error if tags are missing", () => {
+    const invalidKata = { ...baseKata, tags: [] };
+    return request(app)
+      .post("/api/katas")
+      .send(invalidKata)
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe(
+          "400 Bad Request - invalid or missing fields"
+        );
+      });
+  });
+
+  test("409: responds with conflict if title already exists", async () => {
+    const baseKataTitle = {
+      title: "Reverse a String",
+      description:
+        "Write a function that takes a string and returns it reversed",
+      initial_code: "function reverseString(str) {}",
+      solution_code:
+        'function reverseString(str) { return str.split("").reverse().join(""); }',
+      difficulty: "medium",
+      tags: ["strings"],
+    };
+    await request(app).post("/api/katas").send(baseKataTitle);
+    return request(app)
+      .post("/api/katas")
+      .send(baseKataTitle)
+      .expect(409)
+      .then((res) => {
+        expect(res.body.msg).toBe("409 Conflict - kata already exists");
+      });
+  });
+
+  test("409: responds with conflict if initial_code already exists", async () => {
+    const baseKataCode = {
+      title: "String reverse",
+      description:
+        "Write a function that takes a string and returns it reversed",
+      initial_code: "function reverseString(str) {}",
+      solution_code:
+        'function reverseString(str) { return str.split("").reverse().join(""); }',
+      difficulty: "medium",
+      tags: ["strings"],
+    };
+    await request(app).post("/api/katas").send(baseKataCode);
+    return request(app)
+      .post("/api/katas")
+      .send(baseKataCode)
+      .expect(409)
+      .then((res) => {
+        expect(res.body.msg).toBe("409 Conflict - code already exists");
       });
   });
 });

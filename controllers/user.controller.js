@@ -1,5 +1,5 @@
 import { getAuth } from "@clerk/express";
-import { fetchUserById, insertUser } from "../models/userModel.js";
+import { fetchUserById, insertUser } from "../models/user.model.js";
 
 export async function getUserById(req, res) {
   const { userId } = getAuth(req);

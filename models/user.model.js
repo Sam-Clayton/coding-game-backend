@@ -12,7 +12,7 @@ export async function fetchUserById(clerk_user_id) {
   return rows[0];
 }
 
-export async function createUser({ clerk_user_id, username, avatar_url }) {
+export async function insertUser({ clerk_user_id, username, avatar_url }) {
   const { rows } = await db.query(
     `
     INSERT INTO users (clerk_user_id, username, avatar_url)

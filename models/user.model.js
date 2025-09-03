@@ -5,12 +5,12 @@ export async function findUserByClerkId(clerkUserId) {
   return result.rows[0];
 }
 
-export async function createUser({ clerkUserId, username, avatarUrl, level,xp, isAdmin, createdAt }) {
+export async function createUser({ clerkUserId, username, avatarUrl, isAdmin }) {
   const result = await pool.query(
-    `INSERT INTO users (clerk_user_id, username, avatar_url, level, xp, is_admin, created_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `INSERT INTO users (clerk_user_id, username, avatar_url, is_admin
+     VALUES ($1, $2, $3, $4)
      RETURNING *`,
-    [clerkUserId, username, avatarUrl, level,xp, isAdmin, createdAt]
+    [clerkUserId, username, avatarUrl, isAdmin]
   );
   return result.rows[0];
 }

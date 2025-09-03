@@ -64,6 +64,16 @@ export function selectKataTags(kata_id) {
     });
 }
 
+export function selectKataHint(kata_id) {
+  return db
+    .query(`SELECT hint FROM hints WHERE kata_id = $1;`, [kata_id])
+    .then((hintsResult) => {
+      if (hintsResult.rows.length === 0) return null; 
+      const hint = hintsResult.rows[0].hint;
+      return { kata_id, hint };
+    });
+}
+
 export const insertKata = ({
   title,
   description,
@@ -104,7 +114,8 @@ export const insertKataTags = (kata_id, tags) => {
 };
 
 export const findKataByTitle = (title) => {
-  return db.query("SELECT title FROM katas WHERE title = $1", [title])
+  return db
+    .query("SELECT title FROM katas WHERE title = $1", [title])
     .then(({ rows }) => rows[0]);
 };
 

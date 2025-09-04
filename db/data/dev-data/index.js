@@ -3,5 +3,7 @@ import kataData from "./katas.js";
 import kataTagsData from "./kataTags.js";
 import tagData from "./tags.js";
 import testData from "./tests.js";
+import achievementData from "./achievements.js"
+import userData from "./users.js"
 
-export default { hintData, kataData, kataTagsData, tagData, testData };
+export default { hintData, kataData, kataTagsData, tagData, testData, achievementData, userData };

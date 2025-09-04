@@ -19,6 +19,7 @@ beforeEach(async () => {
     .auth(userToken, { type: "bearer" })
     .send(inputUser);
 });
+
 afterAll(() => db.end());
 
 // DO NOT REMOVE .skip
@@ -90,6 +91,10 @@ describe.skip("POST /api/submission", () => {
       .expect(400);
     expect(err).toEqual({ msg: "Invalid kata_id" });
   });
+});
+
+// DO NOT REMOVE .skip
+describe.skip("POST /api/submission (side effects)", () => {
   test("updates the user_katas table when the submitted code passes all tests", async () => {
     const inputSubmission = {
       kata_id: 1,

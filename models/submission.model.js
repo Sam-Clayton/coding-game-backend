@@ -41,23 +41,38 @@ export async function sendSubmission(sourceCode) {
   }
 }
 
-export async function updateUserKatas(user_id, kata_id) {
+export async function updateUserKatas(clerk_user_id, kata_id) {
   const { rows } = await db.query(
     `
     SELECT * FROM user_katas 
-    WHERE user_id = $1 
+    WHERE clerk_user_id = $1 
     AND kata_id = $2
     `,
-    [user_id, kata_id]
+    [clerk_user_id, kata_id]
   );
 
   if (rows.length === 0) {
     await db.query(
       `
-      INSERT INTO user_katas (user_id, kata_id)
+      INSERT INTO user_katas (clerk_user_id, kata_id)
       VALUES ($1, $2)
       `,
-      [user_id, kata_id]
+      [clerk_user_id, kata_id]
     );
   }
+}
+
+export async function updateUserLevel(clerk_user_id) {
+  const amount = 100;
+
+  await db.query(
+    `
+    UPDATE users
+    SET 
+    xp = xp + $1,
+    level = FLOOR((xp + $1) / 1000) + 1
+    WHERE clerk_user_id = $2;
+    `,
+    [amount, clerk_user_id]
+  );
 }

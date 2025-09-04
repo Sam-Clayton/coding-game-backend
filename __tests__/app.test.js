@@ -472,3 +472,60 @@ describe("GET /api", () => {
     expect(endpoints).toEqual(endpointsJson);
   });
 });
+
+describe("GET /api/users", () => {
+  test("200: responds with an array of all users", async () => {
+    const { body } = await request(app).get("/api/users").expect(200);
+
+    expect(Array.isArray(body.users)).toBe(true);
+
+    body.users.forEach((user) => {
+      expect(user).toHaveProperty("user_id");
+      expect(user).toHaveProperty("username");
+      expect(user).toHaveProperty("clerk_user_id");
+      expect(user).toHaveProperty("avatar_url");
+      expect(user).toHaveProperty("level");
+      expect(user).toHaveProperty("xp");
+      expect(user).toHaveProperty("is_admin");
+      expect(user).toHaveProperty("created_at");
+    });
+  });
+  test("200: each user has the correct data types", async () => {
+    const { body } = await request(app).get("/api/users").expect(200);
+
+    body.users.forEach((user) => {
+      expect(typeof user.user_id).toBe("number");
+      expect(typeof user.username).toBe("string");
+      expect(typeof user.clerk_user_id).toBe("string");
+      expect(typeof user.avatar_url).toBe("string");
+      expect(typeof user.level).toBe("number");
+      expect(typeof user.xp).toBe("number");
+      expect(typeof user.is_admin).toBe("boolean");
+      expect(new Date(user.created_at)).toBeInstanceOf(Date);
+    });
+  });
+});
+
+describe("GET /api/users (sorted by achievements)", () => {
+  test("200: responds with all users including achievement_count", async () => {
+    const { body } = await request(app)
+      .get("/api/users?sort_by=achievements")
+      .expect(200);
+
+    expect(Array.isArray(body.users)).toBe(true);
+
+    body.users.forEach((user) => {
+      expect(user).toHaveProperty("user_id");
+      expect(user).toHaveProperty("username");
+      expect(user).toHaveProperty("achievement");
+      expect(typeof user.achievement).toBe("string");
+    });
+  });
+  test("200: returns an empty array when no users exist", async () => {
+    await db.query("DELETE FROM users;");
+
+    const { body } = await request(app).get("/api/users").expect(200);
+
+    expect(body.users).toEqual([]);
+  });
+});

@@ -4,6 +4,7 @@ import { Webhook } from "svix";
 import { createUser } from "../controllers/user.controller.js";
 const __dirname = import.meta.dirname;
 
+const ENV = process.env.NODE_ENV || "development";
 dotenv.config({ path: `${__dirname}/../.env.${ENV}` });
 
 const webhookRouter = express.Router();

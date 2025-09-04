@@ -3,10 +3,10 @@ import { fetchUserById, insertUser } from "../models/user.model.js";
 
 export async function createUser(req, res) {
   const { userId } = getAuth(req);
-  const { username, avatar_url } = req.body;
+  const { username, avatar_url, is_admin } = req.body;
 
   try {
-    const user = await insertUser(userId, username, avatar_url);
+    const user = await insertUser(userId, username, avatar_url, is_admin);
     res.status(201).send({ user });
   } catch (err) {
     console.log(err);

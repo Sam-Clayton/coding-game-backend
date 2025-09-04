@@ -8,7 +8,7 @@ export async function createUsers() {
       user_id SERIAL PRIMARY KEY,
       clerk_user_id VARCHAR(255) UNIQUE NOT NULL,
       username VARCHAR(50) UNIQUE NOT NULL,
-      avatar_url VARCHAR(1000),
+      avatar_url VARCHAR(1000) DEFAULT https://cdn-icons-png.freepik.com/512/2919/2919906.png,
       level INT DEFAULT 1,
       xp INT default 0,
       is_admin BOOL NOT NULL DEFAULT FALSE,

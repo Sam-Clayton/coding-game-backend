@@ -1,4 +1,4 @@
-import { getAuth } from "@clerk/express";
+// import { getAuth } from "@clerk/express";
 import {
   sendSubmission,
   updateUserKatas,
@@ -18,11 +18,11 @@ export default async function postSubmission(req, res) {
     const sourceCode = await generateCode(user_code, rows);
     const outcome = await sendSubmission(sourceCode);
 
-    if (outcome.result === "PASS") {
-      const { userId } = getAuth(req);
-      await updateUserKatas(userId, kata_id);
-      await updateUserLevel(userId);
-    }
+    // if (outcome.result === "PASS") {
+    //   const { userId } = getAuth(req);
+    //   await updateUserKatas(userId, kata_id);
+    //   await updateUserLevel(userId);
+    // }
     res.send(outcome);
   } catch (err) {
     console.log(err);

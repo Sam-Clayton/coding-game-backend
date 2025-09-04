@@ -9,6 +9,6 @@ const apiRouter = express.Router();
 apiRouter.get("/", getApi);
 apiRouter.use("/katas", katasRouter);
 apiRouter.use("/submission", submissionRouter);
-apiRouter.get("/users", usersRouter);
+apiRouter.use("/users", usersRouter);
 
 export default apiRouter;

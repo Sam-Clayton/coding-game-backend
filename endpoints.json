@@ -78,5 +78,35 @@
     "exampleResponseErr": {
       "result": "ReferenceError: addNumbers is not defined"
     }
+  },
+  "POST /api/users": {
+    "description": "inserts the current user into the internal database",
+    "exampleRequestBody": {
+      "username": "kataenthusiast31",
+      "avatar_url": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+    },
+    "exampleResponse": {
+      "user_id": 3,
+      "clerk_user_id": "clerkuserid",
+      "username": "kataenthusiast31",
+      "avatar_url": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+      "level": 1,
+      "xp": 0,
+      "is_admin": false,
+      "created_at": "2025-09-04 11:30"
+    }
+  },
+  "GET /api/users/profile": {
+    "description": "serves the current user's information from the internal database",
+    "exampleResponse": {
+      "user_id": 3,
+      "clerk_user_id": "clerkuserid",
+      "username": "kataenthusiast31",
+      "avatar_url": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+      "level": 1,
+      "xp": 0,
+      "is_admin": false,
+      "created_at": "2025-09-04 11:30"
+    }
   }
 }

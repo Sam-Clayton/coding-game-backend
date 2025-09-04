@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import { clerkMiddleware } from "@clerk/express";
 import apiRouter from "./routers/api.router.js";
-import webhookRouter from "./routers/webhook.router.js";
+// import webhookRouter from "./routers/webhook.router.js";
 import {
   handleBadRequest,
   handleCustomError,
@@ -22,11 +22,13 @@ app.use(express.json());
 
 app.use(cors());
 
-app.use(
-  "/api/webhooks",
-  express.raw({ type: "application/json" }),
-  webhookRouter
-);
+// app.use(
+//   "/api/webhooks",
+//   express.raw({ type: "application/json" }),
+//   webhookRouter
+// );
+
+// Parses the session or token from cookies or headers, and attaches an auth object to req
 app.use(clerkMiddleware());
 
 app.use("/api", apiRouter);

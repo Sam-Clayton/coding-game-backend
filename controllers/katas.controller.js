@@ -40,6 +40,43 @@ export const getKataById = (req, res, next) => {
     });
 };
 
+export const getKataHint = (req, res, next) => {
+  const kata_id = Number(req.params.kata_id);
+  if (isNaN(kata_id) || kata_id <= 0) {
+    return res.status(400).json({ msg: "400 Bad Request" });
+  }
+
+  selectKataHint(kata_id)
+    .then((result) => {
+      if (!result) {
+        return res.status(404).json({ msg: "Hint not found" });
+      }
+      res.status(200).json(result);
+    })
+    .catch((err) => next(err));
+};
+
+export const getKataNote = async (req, res) => {
+  try {
+    const kata_id = Number(req.params.kata_id);
+
+    if (!Number.isInteger(kata_id) || kata_id <= 0) {
+      return res.status(400).json({ msg: "400 Bad Request" });
+    }
+
+    const note = await selectKataNote(kata_id);
+
+    if (!note || !note.note) {
+      return res.status(404).json({ msg: "Note not found" });
+    }
+
+    res.status(200).json(note);
+  } catch (err) {
+    console.error("Error in getKataNote:", err);
+    res.status(500).json({ msg: "500 Internal Server Error" });
+  }
+};
+
 export const getKataTags = (req, res, next) => {
   const kata_id = Number(req.params.kata_id);
 
@@ -57,39 +94,6 @@ export const getKataTags = (req, res, next) => {
     .catch((err) => next(err));
 };
 
-export const getKataHint = (req, res, next) => {
-  const kata_id = Number(req.params.kata_id);
-  if (isNaN(kata_id) || kata_id <= 0) {
-    return res.status(400).json({ msg: "400 Bad Request" });
-  }
-
-  selectKataHint(kata_id)
-    .then((result) => {
-      if (!result) {
-        return res.status(404).json({ msg: "Hint not found" });
-      }
-      res.status(200).json(result);
-    })
-    .catch((err) => next(err));
-};
-
-export const getKataNote = (req, res, next) => {
-  const kata_id = Number(req.params.kata_id);
-
-  if (!Number.isInteger(kata_id) || kata_id <= 0) {
-    return res.status(400).json({ msg: "400 Bad Request" });
-  }
-
-  selectKataNote(kata_id)
-    .then((note) => {
-      if (!note) return res.status(404).json({ msg: "Note not found" });
-      res.status(200).json(note);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({ msg: "500 Internal Server Error" });
-    });
-};
 export const postKata = (req, res, next) => {
   const { title, description, initial_code, solution_code, difficulty, tags } =
     req.body;

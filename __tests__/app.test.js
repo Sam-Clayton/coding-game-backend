@@ -111,74 +111,6 @@ describe("GET /api/katas/:id", () => {
   });
 });
 
-describe("GET /api/katas/:id/tags", () => {
-  test("200: responds with an object containing kata_id and tags array", () => {
-    return request(app)
-      .get("/api/katas/1/tags")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body).toEqual({
-          kata_id: 1,
-          tags: expect.any(Array),
-        });
-        expect(body.tags).toEqual(
-          expect.arrayContaining(["numbers", "functions"])
-        );
-      });
-  });
-
-  test("returns correct array from kata_tags", async () => {
-    const result = await selectKataTags(1);
-    expect(result).toEqual({
-      kata_id: 1,
-      tags: ["numbers", "functions"],
-    });
-  });
-
-  test("200: responds with empty tags array if kata exists but has no tags", () => {
-    return request(app)
-      .get("/api/katas/4/tags")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body).toEqual({ kata_id: 4, tags: [] });
-      });
-  });
-
-  test("404: responds with error if kata does not exist", () => {
-    return request(app)
-      .get("/api/katas/9999/tags")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Tags not found");
-      });
-  });
-
-  test("400: responds with error for invalid kata_id", () => {
-    return request(app)
-      .get("/api/katas/not-a-number/tags")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("400 Bad Request");
-      });
-  });
-
-  test("400: responds with error for zero or negative kata_id", async () => {
-    await request(app)
-      .get("/api/katas/0/tags")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("400 Bad Request");
-      });
-
-    await request(app)
-      .get("/api/katas/-5/tags")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("400 Bad Request");
-      });
-  });
-});
-
 describe("GET /api/katas/:id/hint", () => {
   test("200: responds with an object containing kata_id and hint string", () => {
     return request(app)
@@ -295,6 +227,108 @@ describe("GET /api/katas/:id/note", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Note not found");
+      });
+  });
+});
+
+describe("GET /api/katas/:id/tags", () => {
+  test("200: responds with an object containing kata_id and tags array", () => {
+    return request(app)
+      .get("/api/katas/1/tags")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual({
+          kata_id: 1,
+          tags: expect.any(Array),
+        });
+        expect(body.tags).toEqual(
+          expect.arrayContaining(["numbers", "functions"])
+        );
+      });
+  });
+
+  test("returns correct array from kata_tags", async () => {
+    const result = await selectKataTags(1);
+    expect(result).toEqual({
+      kata_id: 1,
+      tags: ["numbers", "functions"],
+    });
+  });
+
+  test("200: responds with empty tags array if kata exists but has no tags", () => {
+    return request(app)
+      .get("/api/katas/4/tags")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual({ kata_id: 4, tags: [] });
+      });
+  });
+
+  test("404: responds with error if kata does not exist", () => {
+    return request(app)
+      .get("/api/katas/9999/tags")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Tags not found");
+      });
+  });
+
+  test("400: responds with error for invalid kata_id", () => {
+    return request(app)
+      .get("/api/katas/not-a-number/tags")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400 Bad Request");
+      });
+  });
+
+  test("400: responds with error for zero or negative kata_id", async () => {
+    await request(app)
+      .get("/api/katas/0/tags")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400 Bad Request");
+      });
+
+    await request(app)
+      .get("/api/katas/-5/tags")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400 Bad Request");
+      });
+  });
+});
+
+describe("GET /api/katas (tag query)", () => {
+  test("200: gets katas with given tag", () => {
+    return request(app)
+      .get("/api/katas?tag=numbers")
+      .expect(200)
+      .then(({ body }) => {
+        const katas = body.katas;
+        expect(Array.isArray(katas)).toBe(true);
+        katas.forEach((kata) => {
+          expect(kata.tag).toBe("numbers");
+        });
+      });
+  });
+  test("200: returns all katas when no tag query is given", () => {
+    return request(app)
+      .get("/api/katas")
+      .expect(200)
+      .then(({ body }) => {
+        const katas = body.katas;
+        expect(Array.isArray(katas)).toBe(true);
+        expect(katas.length).toBeGreaterThan(0);
+      });
+  });
+
+  test("404: responds with error when tag does not exist", () => {
+    return request(app)
+      .get("/api/katas?tag=nonexistenttopic")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Tag not found");
       });
   });
 });
@@ -426,40 +460,6 @@ describe("POST /api/katas", () => {
       .expect(409)
       .then((res) => {
         expect(res.body.msg).toBe("409 Conflict - code already exists");
-      });
-  });
-});
-
-describe("GET /api/katas (tag query)", () => {
-  test("200: gets katas with given tag", () => {
-    return request(app)
-      .get("/api/katas?tag=numbers")
-      .expect(200)
-      .then(({ body }) => {
-        const katas = body.katas;
-        expect(Array.isArray(katas)).toBe(true);
-        katas.forEach((kata) => {
-          expect(kata.tag).toBe("numbers");
-        });
-      });
-  });
-  test("200: returns all katas when no tag query is given", () => {
-    return request(app)
-      .get("/api/katas")
-      .expect(200)
-      .then(({ body }) => {
-        const katas = body.katas;
-        expect(Array.isArray(katas)).toBe(true);
-        expect(katas.length).toBeGreaterThan(0);
-      });
-  });
-
-  test("404: responds with error when tag does not exist", () => {
-    return request(app)
-      .get("/api/katas?tag=nonexistenttopic")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Tag not found");
       });
   });
 });

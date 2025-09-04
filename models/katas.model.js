@@ -44,6 +44,38 @@ export const fetchKataById = (id) => {
     });
 };
 
+export function selectKataHint(kata_id) {
+  return db
+    .query(`SELECT hint FROM hints WHERE kata_id = $1;`, [kata_id])
+    .then((hintsResult) => {
+      if (hintsResult.rows.length === 0) return null;
+      const hint = hintsResult.rows[0].hint;
+      return { kata_id, hint };
+    });
+}
+
+export async function selectKataNote(kata_id) {
+  try {
+    if (!Number.isInteger(kata_id) || kata_id <= 0) {
+      throw new Error("Invalid kata_id");
+    }
+
+    const result = await db.query(
+      `SELECT kata_id, note FROM notes WHERE kata_id = $1;`,
+      [kata_id]
+    );
+
+    if (!result.rows.length) return null;
+
+    return {
+      kata_id: result.rows[0].kata_id,
+      note: result.rows[0].note,
+    };
+  } catch (err) {
+    console.error("Error in selectKataNote:", err);
+    throw err;
+  }
+}
 export function selectKataTags(kata_id) {
   return db
     .query(`SELECT kata_id FROM katas WHERE kata_id = $1;`, [kata_id])
@@ -61,26 +93,6 @@ export function selectKataTags(kata_id) {
           const tags = tagsResult.rows[0]?.tags || [];
           return { kata_id, tags };
         });
-    });
-}
-
-export function selectKataHint(kata_id) {
-  return db
-    .query(`SELECT hint FROM hints WHERE kata_id = $1;`, [kata_id])
-    .then((hintsResult) => {
-      if (hintsResult.rows.length === 0) return null; 
-      const hint = hintsResult.rows[0].hint;
-      return { kata_id, hint };
-    });
-}
-
-export function selectKataNote(kata_id) {
-  return db
-    .query(`SELECT note FROM notes WHERE kata_id = $1;`, [kata_id])
-    .then((notesResult) => {
-      if (notesResult.rows.length === 0) return null; 
-      const note = notesResult.rows[0].note;
-      return { kata_id, note };
     });
 }
 

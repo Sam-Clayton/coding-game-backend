@@ -39,6 +39,8 @@ A fun learning tool for people who want to improve their JavaScript skills. Prac
 - GET /api
 - GET /api/katas
 - GET /api/katas/:kata_id
+- GET /api/katas/:kata_id/hint
+- GET /api/katas/:kata_id/note
 - GET /api/katas/:kata_id/tags
 - POST /api/katas
 - POST /api/submission

@@ -34,10 +34,27 @@ export async function insertUser(
   return rows[0];
 }
 
+
 export async function fetchAllUsers() {
   const result = await db.query(
-    `SELECT user_id, clerk_user_id, username, avatar_url, level, xp, is_admin, created_at FROM users;`
+    `
+    SELECT u.user_id,
+           u.clerk_user_id,
+           u.username,
+           u.avatar_url,
+           u.level,
+           u.xp,
+           u.is_admin,
+           u.created_at,
+           COUNT(ua.achievement) AS achievement
+    FROM users u
+    LEFT JOIN user_achievements ua
+      ON u.user_id = ua.user_id
+    GROUP BY u.user_id
+    ORDER BY achievement DESC;
+    `
   );
+
   return result.rows;
 }
 

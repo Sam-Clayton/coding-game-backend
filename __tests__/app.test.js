@@ -4,6 +4,7 @@ import db from "../db/connection.js";
 import { seed } from "../db/seeds/seed.js";
 import * as data from "../db/data/test-data/index.js";
 import endpointsJson from "../endpoints.json" with { type: "json" };
+import { selectKataTags } from "../models/katas.model.js";
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
@@ -82,24 +83,23 @@ describe("GET /api/katas/:id", () => {
       });
   });
 
-   test("400: responds with an error when kata_id is zero", () => {
-  return request(app)
-    .get("/api/katas/0")
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe("400 Bad Request");
-    });
-});
+  test("400: responds with an error when kata_id is zero", () => {
+    return request(app)
+      .get("/api/katas/0")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400 Bad Request");
+      });
+  });
 
-test("400: responds with an error when kata_id is negative", () => {
-  return request(app)
-    .get("/api/katas/-5")
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe("400 Bad Request");
-    });
-});
-
+  test("400: responds with an error when kata_id is negative", () => {
+    return request(app)
+      .get("/api/katas/-5")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400 Bad Request");
+      });
+  });
 
   test("404: responds with an error message when a request is made for a kata_id that is valid but not present in the database", () => {
     return request(app)
@@ -114,27 +114,26 @@ test("400: responds with an error when kata_id is negative", () => {
 describe("GET /api/katas/:id/tags", () => {
   test("200: responds with an object containing kata_id and tags array", () => {
     return request(app)
-      .get("/api/katas/3/tags")
+      .get("/api/katas/1/tags")
       .expect(200)
       .then(({ body }) => {
-        expect(body).toHaveProperty("kata_id");
-        expect(body).toHaveProperty("tags");
-        expect(typeof body.kata_id).toBe("number");
-        expect(Array.isArray(body.tags)).toBe(true);
+        console.log(body);
+        expect(body).toEqual({
+          kata_id: 1,
+          tags: expect.any(Array),
+        });
+        expect(body.tags).toEqual(
+          expect.arrayContaining(["numbers", "functions"])
+        );
       });
   });
 
-  test("200: responds with correct tags for a kata", () => {
-    return request(app)
-      .get("/api/katas/2/tags")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.kata_id).toBe(2);
-        expect(Array.isArray(body.tags)).toBe(true);
-        expect(body.tags).toEqual(
-          expect.arrayContaining(["numbers", "conditionals"])
-        );
-      });
+  test("returns correct array from kata_tags", async () => {
+    const result = await selectKataTags(1);
+    expect(result).toEqual({
+      kata_id: 1,
+      tags: ["numbers", "functions"],
+    });
   });
 
   test("200: responds with empty tags array if kata exists but has no tags", () => {
@@ -142,13 +141,21 @@ describe("GET /api/katas/:id/tags", () => {
       .get("/api/katas/4/tags")
       .expect(200)
       .then(({ body }) => {
-        expect(body.kata_id).toBe(4);
-        expect(Array.isArray(body.tags)).toBe(true);
-        expect(body.tags).toEqual([]);
+        console.log(body);
+        expect(body).toEqual({ kata_id: 4, tags: [] });
       });
   });
 
-  test("400: responds with an error when kata_id is of the wrong data type", () => {
+  test("404: responds with error if kata does not exist", () => {
+    return request(app)
+      .get("/api/katas/9999/tags")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Tags not found");
+      });
+  });
+
+  test("400: responds with error for invalid kata_id", () => {
     return request(app)
       .get("/api/katas/not-a-number/tags")
       .expect(400)
@@ -157,30 +164,19 @@ describe("GET /api/katas/:id/tags", () => {
       });
   });
 
-   test("400: responds with an error when kata_id is zero", () => {
-  return request(app)
-    .get("/api/katas/0/tags")
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe("400 Bad Request");
-    });
-});
-
-test("400: responds with an error when kata_id is negative", () => {
-  return request(app)
-    .get("/api/katas/-5/tags")
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe("400 Bad Request");
-    });
-});
-
-  test("404: responds with an error when kata_id is valid but not in the database", () => {
-    return request(app)
-      .get("/api/katas/9999/tags")
-      .expect(404)
+  test("400: responds with error for zero or negative kata_id", async () => {
+    await request(app)
+      .get("/api/katas/0/tags")
+      .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Tags not found");
+        expect(body.msg).toBe("400 Bad Request");
+      });
+
+    await request(app)
+      .get("/api/katas/-5/tags")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400 Bad Request");
       });
   });
 });
@@ -218,22 +214,22 @@ describe("GET /api/katas/:id/hint", () => {
   });
 
   test("400: responds with an error when kata_id is zero", () => {
-  return request(app)
-    .get("/api/katas/0/hint")
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe("400 Bad Request");
-    });
-});
+    return request(app)
+      .get("/api/katas/0/hint")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400 Bad Request");
+      });
+  });
 
-test("400: responds with an error when kata_id is negative", () => {
-  return request(app)
-    .get("/api/katas/-5/hint")
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe("400 Bad Request");
-    });
-});
+  test("400: responds with an error when kata_id is negative", () => {
+    return request(app)
+      .get("/api/katas/-5/hint")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400 Bad Request");
+      });
+  });
 
   test("404: responds with an error when kata_id is valid but not in the database", () => {
     return request(app)

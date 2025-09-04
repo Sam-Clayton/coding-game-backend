@@ -473,18 +473,13 @@ describe("GET /api", () => {
   });
 });
 
-
 describe("GET /api/users", () => {
   test("200: responds with an array of all users", async () => {
-    const { body } = await request(app)
-      .get("/api/users")
-      .expect(200);
+    const { body } = await request(app).get("/api/users").expect(200);
 
-    
     expect(Array.isArray(body.users)).toBe(true);
 
-
-    body.users.forEach(user => {
+    body.users.forEach((user) => {
       expect(user).toHaveProperty("user_id");
       expect(user).toHaveProperty("username");
       expect(user).toHaveProperty("clerk_user_id");
@@ -495,13 +490,10 @@ describe("GET /api/users", () => {
       expect(user).toHaveProperty("created_at");
     });
   });
-    test("200: each user has the correct data types", async () => {
-    const { body } = await request(app)
-      .get("/api/users")
-      .expect(200);
+  test("200: each user has the correct data types", async () => {
+    const { body } = await request(app).get("/api/users").expect(200);
 
-    body.users.forEach(user => {
-      console.log(user)
+    body.users.forEach((user) => {
       expect(typeof user.user_id).toBe("number");
       expect(typeof user.username).toBe("string");
       expect(typeof user.clerk_user_id).toBe("string");
@@ -512,14 +504,27 @@ describe("GET /api/users", () => {
       expect(new Date(user.created_at)).toBeInstanceOf(Date);
     });
   });
+});
 
+describe("GET /api/users (sorted by achievements)", () => {
+  test("200: responds with all users including achievement_count", async () => {
+    const { body } = await request(app)
+      .get("/api/users?sort_by=achievements")
+      .expect(200);
+
+    expect(Array.isArray(body.users)).toBe(true);
+
+    body.users.forEach((user) => {
+      expect(user).toHaveProperty("user_id");
+      expect(user).toHaveProperty("username");
+      expect(user).toHaveProperty("achievement");
+      expect(typeof user.achievement).toBe("string");
+    });
+  });
   test("200: returns an empty array when no users exist", async () => {
-    // temporarily clear users table
     await db.query("DELETE FROM users;");
 
-    const { body } = await request(app)
-      .get("/api/users")
-      .expect(200);
+    const { body } = await request(app).get("/api/users").expect(200);
 
     expect(body.users).toEqual([]);
   });

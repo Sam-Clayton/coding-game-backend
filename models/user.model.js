@@ -34,6 +34,13 @@ export async function insertUser(
   return rows[0];
 }
 
+export async function fetchAllUsers() {
+  const result = await db.query(
+    `SELECT user_id, clerk_user_id, username, avatar_url, level, xp, is_admin, created_at FROM users;`
+  );
+  return result.rows;
+}
+
 export async function fetchUserById(clerk_user_id) {
   const { rows } = await db.query(
     `

@@ -1,5 +1,5 @@
 import { getAuth } from "@clerk/express";
-import { fetchUserById, insertUser } from "../models/user.model.js";
+import { fetchAllUsers, fetchUserById, insertUser } from "../models/user.model.js";
 
 export async function createUser(req, res) {
   const { userId } = getAuth(req);
@@ -10,6 +10,16 @@ export async function createUser(req, res) {
     res.status(201).send({ user });
   } catch (err) {
     console.log(err);
+  }
+}
+
+export async function getAllUsers(req, res) {
+  try {
+    const users = await fetchAllUsers();
+    res.status(200).json({ users });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch users" });
   }
 }
 

@@ -63,12 +63,11 @@ export async function seed({
       formatData(userData),
       "clerk_user_id",
       "username",
-      "avatar_url",
       "is_admin"
     );
     await insertData("achievements", formatData(achievementData));
     await insertData("tags", formatData(tagData), "tag");
-    await insertData("notes", formatData(noteData), "kata_id", "note")
+    await insertData("notes", formatData(noteData), "kata_id", "note");
     await insertData("hints", formatData(hintData), "kata_id", "hint");
     await insertData(
       "tests",

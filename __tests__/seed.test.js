@@ -511,4 +511,334 @@ describe("seed", () => {
         });
     });
   });
+  describe("achievements table", () => {
+    test("achievements table exists", () => {
+      return db
+        .query(
+          `SELECT EXISTS (
+            SELECT FROM
+                information_schema.tables
+            WHERE
+                table_name = 'achievements'
+            );`
+        )
+        .then(({ rows: [{ exists }] }) => {
+          expect(exists).toBe(true);
+        });
+    });
+
+    test("achievements table has achievement column as the primary key", () => {
+      return db
+        .query(
+          `SELECT column_name
+            FROM information_schema.table_constraints AS tc
+            JOIN information_schema.key_column_usage AS kcu
+            ON tc.constraint_name = kcu.constraint_name
+            WHERE tc.constraint_type = 'PRIMARY KEY'
+            AND tc.table_name = 'achievements';`
+        )
+        .then(({ rows: [{ column_name }] }) => {
+          expect(column_name).toBe("achievement");
+        });
+    });
+    test("achievements table has description column as text", () => {
+      return db
+        .query(
+          `SELECT column_name, data_type
+            FROM information_schema.columns
+            WHERE table_name = 'achievements'
+            AND column_name = 'description';`
+        )
+        .then(({ rows: [column] }) => {
+          expect(column.column_name).toBe("description");
+          expect(column.data_type).toBe("text");
+        });
+    });
+  });
+  describe("users table", () => {
+    test("users table exists", () => {
+      return db
+        .query(
+          `SELECT EXISTS (
+            SELECT FROM
+                information_schema.tables
+            WHERE
+                table_name = 'users'
+            );`
+        )
+        .then(({ rows: [{ exists }] }) => {
+          expect(exists).toBe(true);
+        });
+    });
+    test("users table has user_id column as a serial", () => {
+      return db
+        .query(
+          `SELECT column_name, data_type, column_default
+            FROM information_schema.columns
+            WHERE table_name = 'users'
+            AND column_name = 'user_id';`
+        )
+        .then(({ rows: [column] }) => {
+          expect(column.column_name).toBe("user_id");
+          expect(column.data_type).toBe("integer");
+          expect(column.column_default).toBe(
+            "nextval('users_user_id_seq'::regclass)"
+          );
+        });
+    });
+    test("users table has user_id column as the primary key", () => {
+      return db
+        .query(
+          `SELECT column_name
+            FROM information_schema.table_constraints AS tc
+            JOIN information_schema.key_column_usage AS kcu
+            ON tc.constraint_name = kcu.constraint_name
+            WHERE tc.constraint_type = 'PRIMARY KEY'
+            AND tc.table_name = 'users';`
+        )
+        .then(({ rows: [{ column_name }] }) => {
+          expect(column_name).toBe("user_id");
+        });
+    });
+    test("clerk_user_id is unique and not null", () => {
+      return db
+        .query(
+          `SELECT column_name, is_nullable
+         FROM information_schema.columns
+         WHERE table_name = 'users'
+         AND column_name = 'clerk_user_id';`
+        )
+        .then(({ rows: [column] }) => {
+          expect(column.column_name).toBe("clerk_user_id");
+          expect(column.is_nullable).toBe("NO");
+        })
+        .then(() => {
+          return db.query(
+            `SELECT constraint_type
+           FROM information_schema.table_constraints
+           WHERE table_name = 'users'
+           AND constraint_type = 'UNIQUE';`
+          );
+        })
+        .then(({ rows }) => {
+          const hasUnique = rows.some((row) => row.constraint_type === "UNIQUE");
+          expect(hasUnique).toBe(true);
+        });
+    });
+
+    test("username is unique and not null", () => {
+      return db
+        .query(
+          `SELECT column_name, is_nullable
+         FROM information_schema.columns
+         WHERE table_name = 'users'
+         AND column_name = 'username';`
+        )
+        .then(({ rows: [column] }) => {
+          expect(column.column_name).toBe("username");
+          expect(column.is_nullable).toBe("NO");
+        });
+    });
+
+    test("avatar_url has correct type and default", () => {
+      return db
+        .query(
+          `SELECT column_name, data_type, column_default
+         FROM information_schema.columns
+         WHERE table_name = 'users'
+         AND column_name = 'avatar_url';`
+        )
+        .then(({ rows: [column] }) => {
+          expect(column.data_type).toBe("character varying");
+          expect(column.column_default).toContain("http");
+        });
+    });
+
+    test("level and xp have integer defaults", () => {
+      return db
+        .query(
+          `SELECT column_name, data_type, column_default
+         FROM information_schema.columns
+         WHERE table_name = 'users'
+         AND column_name IN ('level', 'xp');`
+        )
+        .then(({ rows }) => {
+          const level = rows.find((row) => row.column_name === "level");
+          const xp = rows.find((row) => row.column_name === "xp");
+
+          expect(level.data_type).toBe("integer");
+          expect(level.column_default).toBe("1");
+
+          expect(xp.data_type).toBe("integer");
+          expect(xp.column_default).toBe("0");
+        });
+    });
+
+    test("is_admin has boolean default", () => {
+      return db
+        .query(
+          `SELECT column_name, data_type, column_default
+         FROM information_schema.columns
+         WHERE table_name = 'users'
+         AND column_name = 'is_admin';`
+        )
+        .then(({ rows: [column] }) => {
+          expect(column.data_type).toBe("boolean");
+          expect(column.column_default).toBe("false");
+        });
+    });
+
+    test("created_at defaults to current timestamp", () => {
+      return db
+        .query(
+          `SELECT column_name, data_type, column_default
+         FROM information_schema.columns
+         WHERE table_name = 'users'
+         AND column_name = 'created_at';`
+        )
+        .then(({ rows: [column] }) => {
+          expect(column.data_type).toBe("timestamp without time zone");
+          expect(column.column_default).toBe("CURRENT_TIMESTAMP");
+        });
+    });
+  });
+  describe("user_achievements table", () => {
+    test("user_achievements table exists", () => {
+      return db
+        .query(
+          `SELECT EXISTS (
+          SELECT FROM information_schema.tables
+          WHERE table_name = 'user_achievements'
+        );`
+        )
+        .then(({ rows: [{ exists }] }) => {
+          expect(exists).toBe(true);
+        });
+    });
+
+    test("has user_id column referencing users(user_id)", () => {
+      return db
+        .query(
+          `SELECT kcu.column_name, ccu.table_name AS foreign_table, ccu.column_name AS foreign_column
+         FROM information_schema.table_constraints tc
+         JOIN information_schema.key_column_usage kcu 
+         ON tc.constraint_name = kcu.constraint_name
+         JOIN information_schema.constraint_column_usage ccu 
+         ON ccu.constraint_name = tc.constraint_name
+         WHERE tc.constraint_type = 'FOREIGN KEY'
+         AND tc.table_name = 'user_achievements'
+         AND kcu.column_name = 'user_id';`
+        )
+        .then(({ rows: [fk] }) => {
+          expect(fk.foreign_table).toBe("users");
+          expect(fk.foreign_column).toBe("user_id");
+        });
+    });
+
+    test("has achievement column referencing achievements(achievement)", () => {
+      return db
+        .query(
+          `SELECT kcu.column_name, ccu.table_name AS foreign_table, ccu.column_name AS foreign_column
+         FROM information_schema.table_constraints tc
+         JOIN information_schema.key_column_usage kcu
+          ON tc.constraint_name = kcu.constraint_name
+         JOIN information_schema.constraint_column_usage ccu 
+         ON ccu.constraint_name = tc.constraint_name
+         WHERE tc.constraint_type = 'FOREIGN KEY'
+         AND tc.table_name = 'user_achievements'
+         AND kcu.column_name = 'achievement';`
+        )
+        .then(({ rows: [fk] }) => {
+          expect(fk.foreign_table).toBe("achievements");
+          expect(fk.foreign_column).toBe("achievement");
+        });
+    });
+
+    test("user_id + achievement form a composite primary key", () => {
+      return db
+        .query(
+          `SELECT kcu.column_name
+         FROM information_schema.table_constraints tc
+         JOIN information_schema.key_column_usage kcu
+         ON tc.constraint_name = kcu.constraint_name
+         WHERE tc.constraint_type = 'PRIMARY KEY'
+         AND tc.table_name = 'user_achievements';`
+        )
+        .then(({ rows }) => {
+          const pkColumns = rows.map((row) => row.column_name).sort();
+          expect(pkColumns).toEqual(["achievement", "user_id"]);
+        });
+    });
+  });
+  describe("user_katas table", () => {
+    test("user_katas table exists", async () => {
+      const { rows } = await db.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables
+        WHERE table_name = 'user_katas'
+      );
+    `);
+      expect(rows[0].exists).toBe(true);
+    });
+
+    test("user_katas has user_id column referencing users(user_id)", async () => {
+      const { rows } = await db.query(`
+      SELECT tc.constraint_type, kcu.column_name, ccu.table_name AS foreign_table, ccu.column_name AS foreign_column
+      FROM information_schema.table_constraints AS tc
+      JOIN information_schema.key_column_usage AS kcu
+        ON tc.constraint_name = kcu.constraint_name
+      JOIN information_schema.constraint_column_usage AS ccu
+        ON ccu.constraint_name = tc.constraint_name
+      WHERE tc.constraint_type = 'FOREIGN KEY' 
+        AND tc.table_name = 'user_katas'
+        AND kcu.column_name = 'user_id';
+    `);
+
+      expect(rows[0].foreign_table).toBe("users");
+      expect(rows[0].foreign_column).toBe("user_id");
+    });
+
+    test("user_katas has kata_id column referencing katas(kata_id)", async () => {
+      const { rows } = await db.query(`
+      SELECT tc.constraint_type, kcu.column_name, ccu.table_name AS foreign_table, ccu.column_name AS foreign_column
+      FROM information_schema.table_constraints AS tc
+      JOIN information_schema.key_column_usage AS kcu
+        ON tc.constraint_name = kcu.constraint_name
+      JOIN information_schema.constraint_column_usage AS ccu
+        ON ccu.constraint_name = tc.constraint_name
+      WHERE tc.constraint_type = 'FOREIGN KEY' 
+        AND tc.table_name = 'user_katas'
+        AND kcu.column_name = 'kata_id';
+    `);
+
+      expect(rows[0].foreign_table).toBe("katas");
+      expect(rows[0].foreign_column).toBe("kata_id");
+    });
+
+    test("user_katas has a composite primary key (user_id, kata_id)", async () => {
+      const { rows } = await db.query(`
+      SELECT kcu.column_name
+      FROM information_schema.table_constraints AS tc
+      JOIN information_schema.key_column_usage AS kcu
+        ON tc.constraint_name = kcu.constraint_name
+      WHERE tc.constraint_type = 'PRIMARY KEY'
+        AND tc.table_name = 'user_katas'
+      ORDER BY kcu.ordinal_position;
+    `);
+
+      const pkColumns = rows.map((row) => row.column_name);
+      expect(pkColumns).toEqual(["user_id", "kata_id"]);
+    });
+
+    test("completed_at has default CURRENT_TIMESTAMP", async () => {
+      const { rows } = await db.query(`
+      SELECT column_default
+      FROM information_schema.columns
+      WHERE table_name = 'user_katas'
+        AND column_name = 'completed_at';
+    `);
+
+      expect(rows[0].column_default).toContain("CURRENT_TIMESTAMP");
+    });
+  });
 });

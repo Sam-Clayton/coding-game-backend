@@ -3,12 +3,14 @@ import express from "express";
 import cors from "cors";
 import { clerkMiddleware } from "@clerk/express";
 import apiRouter from "./routers/api.router.js";
-// import webhookRouter from "./routers/webhook.router.js";
+import webhookRouter from "./routers/webhook.router.js";
+
 import {
   handleBadRequest,
   handleCustomError,
   handleServerError,
 } from "./error-handlers/index.js";
+
 const __dirname = import.meta.dirname;
 
 const ENV = process.env.NODE_ENV || "development";
@@ -18,20 +20,16 @@ if (!process.env.CLERK_PUBLISHABLE_KEY && !process.env.CLERK_SECRET_KEY)
   throw new Error("No CLERK_PUBLISHABLE_KEY or CLERK_SECRET_KEY configured");
 
 const app = express();
-app.use(express.json());
 
 app.use(cors());
 
-// app.use(
-//   "/api/webhooks",
-//   express.raw({ type: "application/json" }),
-//   webhookRouter
-// );
+app.use(express.json());
 
-// Parses the session or token from cookies or headers, and attaches an auth object to req
 app.use(clerkMiddleware());
 
 app.use("/api", apiRouter);
+
+app.use("/webhooks", webhookRouter);
 
 app.use(handleBadRequest);
 app.use(handleCustomError);

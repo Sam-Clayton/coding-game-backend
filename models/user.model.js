@@ -34,7 +34,6 @@ export async function insertUser(
   return rows[0];
 }
 
-
 export async function fetchAllUsers() {
   const result = await db.query(
     `
@@ -68,6 +67,16 @@ export async function fetchUserById(clerk_user_id) {
     [clerk_user_id]
   );
   return rows[0];
+}
+
+export async function fetchUserKatas(clerk_user_id) {
+  const { rows } = await db.query(
+    `
+    SELECT *
+    FROM user_katas
+    WHERE clerk_user_id = $1;
+    `
+  );
 }
 
 // export async function updateUser({ clerk_user_id, username, avatar_url }) {

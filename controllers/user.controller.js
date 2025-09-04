@@ -1,16 +1,18 @@
 import { getAuth } from "@clerk/express";
-import { fetchAllUsers, fetchUserById, insertUser } from "../models/user.model.js";
+import {
+  insertUser,
+  fetchAllUsers,
+  fetchUserById,
+  fetchUserKatas,
+} from "../models/user.model.js";
 
-export async function createUser(req, res) {
-  const { userId } = getAuth(req);
-  const { username, avatar_url, is_admin } = req.body;
+export async function createUser(data) {
+  const userId = data.id;
+  const username = data.username || data.email_addresses?.[0]?.email_address;
+  const avatar_url = data.image_url;
 
-  try {
-    const user = await insertUser(userId, username, avatar_url, is_admin);
-    res.status(201).send({ user });
-  } catch (err) {
-    console.log(err);
-  }
+  const user = await insertUser(userId, username, avatar_url);
+  return user;
 }
 
 export async function getAllUsers(req, res) {
@@ -29,6 +31,17 @@ export async function getUserById(req, res) {
   try {
     const user = await fetchUserById(userId);
     res.send({ user });
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function getUserKatas(req, res) {
+  const { userId } = getAuth(req);
+
+  try {
+    const completed = await fetchUserKatas(userId);
+    res.send({ total: completed.length, completed });
   } catch (err) {
     console.log(err);
   }

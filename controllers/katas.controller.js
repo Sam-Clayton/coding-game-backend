@@ -75,20 +75,21 @@ export const getKataHint = (req, res, next) => {
 
 export const getKataNote = (req, res, next) => {
   const kata_id = Number(req.params.kata_id);
-  if (isNaN(kata_id) || kata_id <= 0) {
+
+  if (!Number.isInteger(kata_id) || kata_id <= 0) {
     return res.status(400).json({ msg: "400 Bad Request" });
   }
 
   selectKataNote(kata_id)
-    .then((result) => {
-      if (!result) {
-        return res.status(404).json({ msg: "Note not found" });
-      }
-      res.status(200).json(result);
+    .then((note) => {
+      if (!note) return res.status(404).json({ msg: "Note not found" });
+      res.status(200).json(note);
     })
-    .catch((err) => next(err));
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({ msg: "500 Internal Server Error" });
+    });
 };
-
 export const postKata = (req, res, next) => {
   const { title, description, initial_code, solution_code, difficulty, tags } =
     req.body;

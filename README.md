@@ -43,6 +43,8 @@ A fun learning tool for people who want to improve their JavaScript skills. Prac
 - GET /api/katas/:kata_id/note
 - GET /api/katas/:kata_id/tags
 - POST /api/katas
+- GET /api/users
+- GET /api/users/profile
 - POST /api/submission
 
 ## Deployment

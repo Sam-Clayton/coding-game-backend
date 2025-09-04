@@ -7,21 +7,17 @@ export const fetchAllKatas = (tag) => {
     return db
       .query(`SELECT 1 FROM tags WHERE tag = $1;`, [tag])
       .then(({ rows: tagRows }) => {
-        if (tagRows.length === 0) {
-          return null;
-        }
-        return db
-          .query(
-            `
+        if (tagRows.length === 0) return null;
+        return db.query(
+          `
           SELECT k.kata_id, k.title, k.description, k.initial_code, 
                  k.solution_code, k.difficulty, k.created_at, kt.tag
           FROM katas k
           JOIN kata_tags kt ON k.kata_id = kt.kata_id
           WHERE kt.tag = $1;
           `,
-            [tag]
-          )
-          .then(({ rows }) => rows);
+          [tag]
+        ).then(({ rows }) => rows);
       });
   }
 
@@ -29,15 +25,19 @@ export const fetchAllKatas = (tag) => {
 };
 
 export const fetchKataById = (id) => {
+  if (!Number.isInteger(id) || id <= 0) {
+    return Promise.reject(new Error("Invalid kata_id"));
+  }
+
   return db
     .query(
       `SELECT kata_id, title, description, initial_code, solution_code, difficulty, created_at
-     FROM katas
-     WHERE kata_id = $1;`,
+       FROM katas
+       WHERE kata_id = $1;`,
       [id]
     )
     .then(({ rows }) => {
-      if (rows.length === 0) {
+      if (!rows.length) {
         return Promise.reject({ status: 404, msg: "Kata not found" });
       }
       return rows[0];
@@ -45,73 +45,46 @@ export const fetchKataById = (id) => {
 };
 
 export function selectKataHint(kata_id) {
+  if (!Number.isInteger(kata_id) || kata_id <= 0) {
+    return Promise.reject(new Error("Invalid kata_id"));
+  }
+
   return db
     .query(`SELECT hint FROM hints WHERE kata_id = $1;`, [kata_id])
-    .then((hintsResult) => {
-      if (hintsResult.rows.length === 0) return null;
-      const hint = hintsResult.rows[0].hint;
-      return { kata_id, hint };
-    });
+    .then(({ rows }) => (rows.length ? { kata_id, hint: rows[0].hint } : null));
 }
 
-export async function selectKataNote(kata_id) {
-  try {
-    if (!Number.isInteger(kata_id) || kata_id <= 0) {
-      throw new Error("Invalid kata_id");
-    }
-
-    const result = await db.query(
-      `SELECT kata_id, note FROM notes WHERE kata_id = $1;`,
-      [kata_id]
-    );
-
-    if (!result.rows.length) return null;
-
-    return {
-      kata_id: result.rows[0].kata_id,
-      note: result.rows[0].note,
-    };
-  } catch (err) {
-    console.error("Error in selectKataNote:", err);
-    throw err;
+export function selectKataNote(kata_id) {
+  if (!Number.isInteger(kata_id) || kata_id <= 0) {
+    return Promise.reject(new Error("Invalid kata_id"));
   }
+
+  return db
+    .query(`SELECT kata_id, note FROM notes WHERE kata_id = $1;`, [kata_id])
+    .then(({ rows }) => (rows.length ? { kata_id: rows[0].kata_id, note: rows[0].note } : null));
 }
+
 export function selectKataTags(kata_id) {
+  if (!Number.isInteger(kata_id) || kata_id <= 0) {
+    return Promise.reject(new Error("Invalid kata_id"));
+  }
+
   return db
     .query(`SELECT kata_id FROM katas WHERE kata_id = $1;`, [kata_id])
-    .then((kataResult) => {
-      if (!kataResult.rows.length) return null;
-
+    .then(({ rows }) => {
+      if (!rows.length) return null;
       return db
-        .query(
-          `SELECT ARRAY_AGG(tag) AS tags
-       FROM kata_tags
-       WHERE kata_id = $1;`,
-          [kata_id]
-        )
-        .then((tagsResult) => {
-          const tags = tagsResult.rows[0]?.tags || [];
-          return { kata_id, tags };
-        });
+        .query(`SELECT ARRAY_AGG(tag) AS tags FROM kata_tags WHERE kata_id = $1;`, [kata_id])
+        .then(({ rows }) => ({ kata_id, tags: rows[0]?.tags || [] }));
     });
 }
 
-export const insertKata = ({
-  title,
-  description,
-  initial_code,
-  solution_code,
-  difficulty,
-}) => {
+export const insertKata = ({ title, description, initial_code, solution_code, difficulty }) => {
   return db
     .query(
-      `
-      INSERT INTO katas 
-        (title, description, initial_code, solution_code, difficulty) 
-      VALUES 
-        ($1, $2, $3, $4, $5)
-      RETURNING *;
-      `,
+      `INSERT INTO katas (title, description, initial_code, solution_code, difficulty)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING *;`,
       [title, description, initial_code, solution_code, difficulty]
     )
     .then(({ rows }) => rows[0]);
@@ -136,13 +109,17 @@ export const insertKataTags = (kata_id, tags) => {
 };
 
 export const findKataByTitle = (title) => {
+  if (!title) return Promise.reject(new Error("Title is required"));
+
   return db
-    .query("SELECT title FROM katas WHERE title = $1", [title])
-    .then(({ rows }) => rows[0]);
+    .query("SELECT title FROM katas WHERE title = $1;", [title])
+    .then(({ rows }) => (rows.length ? rows[0] : null));
 };
 
 export const findKataByInitialCode = (initial_code) => {
+  if (!initial_code) return Promise.reject(new Error("Initial code is required"));
+
   return db
-    .query("SELECT * FROM katas WHERE initial_code = $1", [initial_code])
-    .then(({ rows }) => rows[0]);
+    .query("SELECT * FROM katas WHERE initial_code = $1;", [initial_code])
+    .then(({ rows }) => (rows.length ? rows[0] : null));
 };

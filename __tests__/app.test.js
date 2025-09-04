@@ -117,7 +117,6 @@ describe("GET /api/katas/:id/tags", () => {
       .get("/api/katas/1/tags")
       .expect(200)
       .then(({ body }) => {
-        console.log(body);
         expect(body).toEqual({
           kata_id: 1,
           tags: expect.any(Array),
@@ -141,7 +140,6 @@ describe("GET /api/katas/:id/tags", () => {
       .get("/api/katas/4/tags")
       .expect(200)
       .then(({ body }) => {
-        console.log(body);
         expect(body).toEqual({ kata_id: 4, tags: [] });
       });
   });
@@ -194,7 +192,7 @@ describe("GET /api/katas/:id/hint", () => {
       });
   });
 
-  test("200: responds with correct hints for a kata", () => {
+  test("200: responds with correct hint for a kata", () => {
     return request(app)
       .get("/api/katas/4/hint")
       .expect(200)
@@ -236,7 +234,67 @@ describe("GET /api/katas/:id/hint", () => {
       .get("/api/katas/9999/hint")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Hints not found");
+        expect(body.msg).toBe("Hint not found");
+      });
+  });
+});
+
+describe("GET /api/katas/:id/note", () => {
+  test("200: responds with an object containing kata_id and note string", () => {
+    return request(app)
+      .get("/api/katas/3/note")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toHaveProperty("kata_id");
+        expect(body).toHaveProperty("note");
+        expect(typeof body.kata_id).toBe("number");
+        expect(typeof body.note).toBe("string");
+      });
+  });
+  test("200: responds with correct note for a kata", () => {
+    return request(app)
+      .get("/api/katas/4/note")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.kata_id).toBe(4);
+        expect(body.note).toBe(
+          "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/max"
+        );
+      });
+  });
+  test("400: responds with an error when kata_id is of the wrong data type", () => {
+    return request(app)
+      .get("/api/katas/not-a-number/note")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400 Bad Request");
+      });
+  });
+
+  test("400: responds with an error when kata_id is zero", () => {
+    return request(app)
+      .get("/api/katas/0/note")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400 Bad Request");
+      });
+  });
+
+  test("400: responds with an error when kata_id is negative", () => {
+    return request(app)
+      .get("/api/katas/-5/note")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400 Bad Request");
+      });
+  });
+
+  test("404: responds with an error when kata_id is valid but not in the database", () => {
+    return request(app)
+      .get("/api/katas/9999/note")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Note not found");
       });
   });
 });

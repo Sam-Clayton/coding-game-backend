@@ -11,4 +11,8 @@ export default [
     kata_id: 3,
     note: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split",
   },
+  {
+    kata_id: 4,
+    note: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/max",
+    },
 ];

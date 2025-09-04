@@ -74,6 +74,16 @@ export function selectKataHint(kata_id) {
     });
 }
 
+export function selectKataNote(kata_id) {
+  return db
+    .query(`SELECT note FROM notes WHERE kata_id = $1;`, [kata_id])
+    .then((notesResult) => {
+      if (notesResult.rows.length === 0) return null; 
+      const note = notesResult.rows[0].note;
+      return { kata_id, note };
+    });
+}
+
 export const insertKata = ({
   title,
   description,

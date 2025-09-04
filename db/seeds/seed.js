@@ -7,6 +7,7 @@ import {
   createTags,
   createTests,
   createUsers,
+  createNotes,
   createUserAchievements,
   createUserKatas,
   dropTables,
@@ -21,6 +22,7 @@ export async function seed({
   tagData,
   testData,
   userData,
+  noteData,
 }) {
   try {
     await dropTables(
@@ -28,6 +30,7 @@ export async function seed({
       "user_achievements",
       "kata_tags",
       "tests",
+      "notes",
       "hints",
       "tags",
       "achievements",
@@ -40,6 +43,7 @@ export async function seed({
     await createAchievements();
     await createTags();
     await createHints();
+    await createNotes();
     await createTests();
     await createKataTags();
     await createUserAchievements();
@@ -64,6 +68,7 @@ export async function seed({
     );
     await insertData("achievements", formatData(achievementData));
     await insertData("tags", formatData(tagData), "tag");
+    await insertData("notes", formatData(noteData), "kata_id", "note")
     await insertData("hints", formatData(hintData), "kata_id", "hint");
     await insertData(
       "tests",

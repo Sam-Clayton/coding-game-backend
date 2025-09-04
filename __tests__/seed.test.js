@@ -403,16 +403,37 @@ describe("seed", () => {
           expect(column_name).toBe("note_id");
         });
     });
-    test("notes table has note_text column as text", () => {
+    test("kata_id column references a kata from the katas table", () => {
+      return db
+        .query(
+          `
+        SELECT *
+        FROM information_schema.table_constraints AS tc
+        JOIN information_schema.key_column_usage AS kcu
+          ON tc.constraint_name = kcu.constraint_name
+        JOIN information_schema.constraint_column_usage AS ccu
+          ON ccu.constraint_name = tc.constraint_name
+        WHERE tc.constraint_type = 'FOREIGN KEY'
+          AND tc.table_name = 'notes'
+          AND kcu.column_name = 'kata_id'
+          AND ccu.table_name = 'katas'
+          AND ccu.column_name = 'kata_id';
+      `
+        )
+        .then(({ rows }) => {
+          expect(rows).toHaveLength(1);
+        });
+    });
+    test("notes table has note column as text", () => {
       return db
         .query(
           `SELECT column_name, data_type
             FROM information_schema.columns
             WHERE table_name = 'notes'
-            AND column_name = 'note_text';`
+            AND column_name = 'note';`
         )
         .then(({ rows: [column] }) => {
-          expect(column.column_name).toBe("note_text");
+          expect(column.column_name).toBe("note");
           expect(column.data_type).toBe("text");
         });
     });

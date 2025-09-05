@@ -1,9 +1,4 @@
-// import { getAuth } from "@clerk/express";
-import {
-  sendSubmission,
-  updateUserKatas,
-  updateUserLevel,
-} from "../models/submission.model.js";
+import { sendSubmission } from "../models/submission.model.js";
 import { testsQuery } from "../queries/tests.query.js";
 import { generateCode } from "./utils.js";
 
